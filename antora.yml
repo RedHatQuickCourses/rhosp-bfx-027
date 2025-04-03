@@ -1,5 +1,5 @@
-name: REPLACEREPONAME
-title: FIXME Course Title
+name: rhosp-bfx-027
+title: RHOSP Networking Break-Fix Practice - FIXME scenario details
 version: 1
 nav:
 - modules/ROOT/nav.adoc

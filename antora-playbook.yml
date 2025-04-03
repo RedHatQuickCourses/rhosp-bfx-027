@@ -1,6 +1,6 @@
 site:
-  title: FIXME Course Title
-  start_page: REPLACEREPONAME::index.adoc
+  title: RHOSP Networking Break-Fix Practice - FIXME scenario details
+  start_page: rhosp-bfx-027::index.adoc
 
 content:
   sources:
