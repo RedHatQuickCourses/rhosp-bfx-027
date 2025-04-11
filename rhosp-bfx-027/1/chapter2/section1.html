@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Guided solution (page 1 of 2) :: RHOSP Networking Break-Fix Practice - FIXME scenario details</title>
+    <title>Guided solution (page 1) :: RHOSP Networking Break-Fix Practice - FIXME scenario details</title>
     <link rel="prev" href="index.html">
     <link rel="next" href="section2.html">
     <meta name="generator" content="Antora 3.1.3">
@@ -74,7 +74,7 @@
     <a class="nav-link" href="index.html">Guided solution</a>
 <ul class="nav-list">
   <li class="nav-item is-current-page" data-depth="2">
-    <a class="nav-link" href="section1.html">Guided solution (page 1 of 2)</a>
+    <a class="nav-link" href="section1.html">Guided solution (page 1)</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="section2.html">Guided solution (page 2 of 2)</a>
@@ -120,7 +120,7 @@
   <ul>
     <li><a href="../index.html">RHOSP Networking Break-Fix Practice - FIXME scenario details</a></li>
     <li><a href="index.html">Guided solution</a></li>
-    <li><a href="section1.html">Guided solution (page 1 of 2)</a></li>
+    <li><a href="section1.html">Guided solution (page 1)</a></li>
   </ul>
 </nav>
 </div>
@@ -129,9 +129,331 @@
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Guided solution (page 1 of 2)</h1>
+<h1 class="page">Guided solution (page 1)</h1>
+<div class="sect1">
+<h2 id="_objectives"><a class="anchor" href="#_objectives"></a>Objectives</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Investigate the instance connectivity issue in Red Hat OpenStack Platform.</p>
+</li>
+<li>
+<p>Solve the instance connectivity in the hands-on lab environment.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_outcomes"><a class="anchor" href="#_outcomes"></a>Outcomes</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Investigate why ssh to instance through the forwarded port is not working.</p>
+</li>
+<li>
+<p>Fix the ssh to instance failing issue.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_instructions"><a class="anchor" href="#_instructions"></a>Instructions</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Break the environment if you have not done it and then step through the fix.</p>
+<div class="quoteblock">
+<blockquote>
 <div class="paragraph">
-<p>FIXME: Provide step-by-step instructions here to resolve the issue.</p>
+<p>[student@workstation ~]$ lab start bfx027
+Running start action against scenario bfx027
+Run the following command:
+ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.152</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>2. Run the ssh command from the previous lab command output and notice the Connection timed out error.
++</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>[student@workstation ~]$ ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.152
+ssh: connect to host 192.168.51.152 port 1022: Connection timed out</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>+
+You observe that ssh attempt failed which indicates lack of connectivity using configured port forwarding.
+There is only port forwarding for the TCP port 1022 to port 22 configured, thus the ping command will not work and that is expected behaviour.
+
+3. Check connectivity to the other VM with Floating IP configured
++</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>[student@workstation ~]$ oc exec -n openstack openstackclient&#8201;&#8212;&#8201;openstack server list
+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ID                                   | Name                   | Status | Networks                                               | Image               | Flavor   |
+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| a3bc88c1-6ae4-4350-875f-8186e2c34827 | scenario-bfx027-pf-vm  | ACTIVE | scenario-bfx027-network=192.168.200.90                 | cirros-0.5.2-x86_64 | m1.small |
+| aa44b91a-dd10-4294-ad52-8e938a978e00 | scenario-bfx027-fip-vm | ACTIVE | scenario-bfx027-network=192.168.200.85, 192.168.51.154 | cirros-0.5.2-x86_64 | m1.small |
+-------------------------------------------------------------------------------------------------------------------------------------------------------------+</p>
+</div>
+<div class="paragraph">
+<p>[student@workstation ~]$ ssh -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.154
+Warning: Permanently added '192.168.51.154' (ECDSA) to the list of known hosts.
+$ cat /etc/cirros/version
+0.5.2</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>+
+TODO: make sure that both vms are booted on the same node
+Connectivity to other VM using Floating IP works fine which indicates that the issue is not with the connectivity in general but rather that there is some issue with Floating IP Port Forwarding.
+
+4. Floating IP Port Forwardings created in the Neutron are translated to the Loadbalancer in OVN. First lets check if such loadbalancer was created in OVN.
++</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>[student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1)&#8201;&#8212;&#8201;ovn-nbctl --no-leader-only list load_balancer
+_uuid               : 16f7e313-372a-434b-bc35-948c47a8bad4
+external_ids        : {"neutron:device_owner"=port_forwarding_plugin, "neutron:fip_id"="c26aa31e-450b-4348-b58c-6d8a77632f3c", "neutron:revision_number"="2", "neutron:router_name"=neutron-b9968cde-1f94-43a4-a537-23bef2682920}
+health_check        : []
+ip_port_mappings    : {}
+name                : pf-floatingip-c26aa31e-450b-4348-b58c-6d8a77632f3c-tcp
+options             : {}
+protocol            : tcp
+selection_fields    : []
+vips                : {"192.168.51.152:1022"="192.168.200.90:22"}</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>+
+Loadbalancer is created in OVN just fine.
+Important thing to know is that loadbalancers in OVN are always centralized, which means that traffic using Floating IP Port Forwarding is always going through the gateway chassis where the router is hosted.
+
+5. Determine which gateway-chassis is your router on.
++</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>[student@workstation ~]$ oc exec -n openstack openstackclient&#8201;&#8212;&#8201;openstack router show scenario-bfx027-router -c id
+---------------------------------------------+
+| Field | Value                                |
+---------------------------------------------+
+| id    | b9968cde-1f94-43a4-a537-23bef2682920 |
+---------------------------------------------+</p>
+</div>
+<div class="paragraph">
+<p>[student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1)&#8201;&#8212;&#8201;ovn-nbctl --no-leader-only show neutron-b9968cde-1f94-43a4-a537-23bef2682920
+router 5de21a93-d6d7-400d-a620-0335773f07df (neutron-b9968cde-1f94-43a4-a537-23bef2682920) (aka scenario-bfx027-router)
+    port lrp-e1cd793e-43a6-4096-8d3e-7323738eb60c
+        mac: "fa:16:3e:b9:6b:99"
+        networks: ["192.168.200.1/24"]
+    port lrp-d49dbb2a-eba9-49c2-9723-5c9d4adcdad7
+        mac: "fa:16:3e:96:ea:b0"
+        networks: ["192.168.51.165/24"]
+        gateway chassis: [5a3b4e75-f64a-4261-bfb9-290d09f259e4 bfbef098-d0f7-4f26-a5e0-aa89c079ca15 1048012a-c14c-4354-93e3-837701980ce3]
+    nat 06e29258-2f07-47e0-bdd6-ca0e235bd1ac
+        external ip: "192.168.51.154"
+        logical ip: "192.168.200.85"
+        type: "dnat_and_snat"
+    nat d38c2ff4-1a6d-49d0-a2e4-e07cfadf5d1e
+        external ip: "192.168.51.165"
+        logical ip: "192.168.200.0/24"
+        type: "snat"</p>
+</div>
+<div class="paragraph">
+<p>[student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1)&#8201;&#8212;&#8201;ovn-nbctl --no-leader-only lrp-get-gateway-chassis lrp-d49dbb2a-eba9-49c2-9723-5c9d4adcdad7
+lrp-d49dbb2a-eba9-49c2-9723-5c9d4adcdad7_1048012a-c14c-4354-93e3-837701980ce3     3
+lrp-d49dbb2a-eba9-49c2-9723-5c9d4adcdad7_5a3b4e75-f64a-4261-bfb9-290d09f259e4     2
+lrp-d49dbb2a-eba9-49c2-9723-5c9d4adcdad7_bfbef098-d0f7-4f26-a5e0-aa89c079ca15     1</p>
+</div>
+<div class="paragraph">
+<p>[student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-sb -o name | head -n 1)&#8201;&#8212;&#8201;ovn-sbctl --no-leader-only list chassis 1048012a-c14c-4354-93e3-837701980ce3
+_uuid               : 3e10852c-ab5a-4b84-8cc9-ca383cad5b93
+encaps              : [0bf942b5-af9b-4864-8be5-7f9eac94ca71]
+external_ids        : {}
+hostname            : master01
+name                : "1048012a-c14c-4354-93e3-837701980ce3"
+nb_cfg              : 0
+other_config        : {ct-commit-nat-v2="true", ct-commit-to-zone="true", ct-no-masked-label="true", datapath-type=system, fdb-timestamp="true", iface-types="bareudp,erspan,geneve,gre,gtpu,internal,ip6erspan,ip6gre,lisp,patch,srv6,stt,system,tap,vxlan", is-interconn="false", ls-dpg-column="true", mac-binding-timestamp="true", ovn-bridge-mappings="datacentre:br-datacentre", ovn-chassis-mac-mappings="", ovn-cms-options=enable-chassis-as-gw, ovn-ct-lb-related="true", ovn-enable-lflow-cache="true", ovn-limit-lflow-cache="", ovn-memlimit-lflow-cache-kb="", ovn-monitor-all="false", ovn-trim-limit-lflow-cache="", ovn-trim-timeout-ms="", ovn-trim-wmark-perc-lflow-cache="", port-up-notif="true"}
+transport_zones     : []
+vtep_logical_switches: []</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>+
+Your router is hosted on 3 gateway chassis and the one which is active now is on the OpenShift node `master01`.
+
+6. Determine which OVS POD runs on that OpenShift worker node.
++</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>[student@workstation ~]$ oc get pods -n openstack -l service=ovn-controller-ovs -o custom-columns=NAME:.metadata.name,NODE:spec.nodeName
+NAME                       NODE
+ovn-controller-ovs-259n7   master01
+ovn-controller-ovs-bc6wq   master03
+ovn-controller-ovs-g9djs   master02</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>+
+In our case it is the POD `ovn-controller-ovs-259n7`.
+
+7. Check what is the network type and physnet used by this network
++</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>[student@workstation ~]$ oc exec -n openstack openstackclient&#8201;&#8212;&#8201;openstack network show scenario-bfx027-network
+-----------------------------------------------------------------+
+| Field                     | Value                                |
+-----------------------------------------------------------------+
+&#8230;&#8203;
+| name                      | scenario-bfx027-network              |
+&#8230;&#8203;
+| provider:network_type     | vlan                                 |
+| provider:physical_network | datacentre                           |
+| provider:segmentation_id  | 1000                                 |
+&#8230;&#8203;
+-----------------------------------------------------------------+</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>+
+In this case network used by the instances is provider `vlan` network and it uses `datacentre` physical network.
+Gateway chassis are hosted by the ovn-controller running in the POD on the OpenShift worker nodes, this physical network has to be configured in the `nicMapping` parameter in the `OpenStackControlPlane` Custom Resource in OpenShift.
++
+8. Check NIC mappings configured in the OpenStackControlPlane Custom Resource.
++</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>[student@workstation ~]$ oc -n openstack get openstackcontrolplane openstack-control-plane -o custom-columns=NAME:.metadata.name,"NIC MAPPINGS":.spec.ovn.template.ovnController.nicMappings
+NAME                      NIC MAPPINGS
+openstack-control-plane   map[datacentre:ens4]</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>In this case physical network `datacentre` is mapped to the `ens4` NIC which is on the OpenShift worker nodes. This `ens4` NIC is moved directly to the `ovn-controller-ovs` POD and it has name the same as physical network it is mapped to. In our case interface found in the `ovn-controller-ovs` POD should have name `datacentre` and the bridge created for that physical network is named `br-datacentre`.
++
+9. Check traffic on the gateway chassis node hosting Neutron router.
++
+Run tcpdump in the OVS POD to check traffic incomming to that POD through the `datacentre` NIC and in different window run SSH connection from the `workstation` machine to the TCP port 1022, as shown in the instruction after scenario was started.
++</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>[student@workstation ~]$ oc rsh -n openstack -c ovs-vswitchd ovn-controller-ovs-259n7
+sh-5.1# tcpdump -ennvvi datacentre
+dropped privs to tcpdump
+tcpdump: listening on datacentre, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+09:25:51.714275 52:54:00:02:33:fe &gt; fa:16:3e:96:ea:b0, ethertype IPv4 (0x0800), length 74: (tos 0x48, ttl 63, id 41586, offset 0, flags [DF], proto TCP (6), length 60)
+    172.25.250.9.34416 &gt; 192.168.51.152.1022: Flags [S], cksum 0x654a (correct), seq 1095418259, win 32120, options [mss 1460,sackOK,TS val 308489002 ecr 0,nop,wscale 7], length 0
+09:25:51.714958 fa:16:3e:b9:6b:99 &gt; fa:16:3e:93:fc:43, ethertype 802.1Q (0x8100), length 78: vlan 1000, p 0, ethertype IPv4 (0x0800), (tos 0x48, ttl 62, id 41586, offset 0, flags [DF], proto TCP (6), length 60)
+    172.25.250.9.34416 &gt; 192.168.200.90.22: Flags [S], cksum 0xd46f (correct), seq 1095418259, win 32120, options [mss 1460,sackOK,TS val 308489002 ecr 0,nop,wscale 7], length 0
+09:25:52.744656 52:54:00:02:33:fe &gt; fa:16:3e:96:ea:b0, ethertype IPv4 (0x0800), length 74: (tos 0x48, ttl 63, id 41587, offset 0, flags [DF], proto TCP (6), length 60)
+    172.25.250.9.34416 &gt; 192.168.51.152.1022: Flags [S], cksum 0x9a92 (incorrect &#8594; 0x6143), seq 1095418259, win 32120, options [mss 1460,sackOK,TS val 308490033 ecr 0,nop,wscale 7], length 0
+09:25:52.744700 fa:16:3e:b9:6b:99 &gt; fa:16:3e:93:fc:43, ethertype 802.1Q (0x8100), length 78: vlan 1000, p 0, ethertype IPv4 (0x0800), (tos 0x48, ttl 62, id 41587, offset 0, flags [DF], proto TCP (6), length 60)
+    172.25.250.9.34416 &gt; 192.168.200.90.22: Flags [S], cksum 0x2f55 (incorrect &#8594; 0xd068), seq 1095418259, win 32120, options [mss 1460,sackOK,TS val 308490033 ecr 0,nop,wscale 7], length 0
+09:25:54.792601 52:54:00:02:33:fe &gt; fa:16:3e:96:ea:b0, ethertype IPv4 (0x0800), length 74: (tos 0x48, ttl 63, id 41588, offset 0, flags [DF], proto TCP (6), length 60)
+    172.25.250.9.34416 &gt; 192.168.51.152.1022: Flags [S], cksum 0x9a92 (incorrect &#8594; 0x5943), seq 1095418259, win 32120, options [mss 1460,sackOK,TS val 308492081 ecr 0,nop,wscale 7], length 0
+09:25:54.792657 fa:16:3e:b9:6b:99 &gt; fa:16:3e:93:fc:43, ethertype 802.1Q (0x8100), length 78: vlan 1000, p 0, ethertype IPv4 (0x0800), (tos 0x48, ttl 62, id 41588, offset 0, flags [DF], proto TCP (6), length 60)
+    172.25.250.9.34416 &gt; 192.168.200.90.22: Flags [S], cksum 0x2f55 (incorrect &#8594; 0xc868), seq 1095418259, win 32120, options [mss 1460,sackOK,TS val 308492081 ecr 0,nop,wscale 7], length 0
+^C
+6 packets captured
+6 packets received by filter
+0 packets dropped by kernel</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>+
+You can observe that there are incomming packets going to the TCP port 1022. Those packets are not tagged with any vlan id - those are packets going from the workstation server using `public` network.
+There are also packets sent to the TCP port 22 to the fixed IP of the VM (`192.168.200.90`). Those packets are tagged with vlan ID 1000 which match the ID configured in the `provider:segmentation_id` of the the `scenario-bfx027-network` network. Those are packets send from the Neutron router to the VM and should be observed on the compute node where VM is running.
+
+10. Access the RHOSO environment and determine the specific compute node where the instance is currently running.
+[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack server list --long -c Name -c Status -c Host
++------------------------+--------+---------------------------+
+| Name                   | Status | Host                      |
++------------------------+--------+---------------------------+
+| scenario-bfx027-pf-vm  | ACTIVE | compute02.srv.example.com |
+| scenario-bfx027-fip-vm | ACTIVE | compute01.srv.example.com |
++------------------------+--------+---------------------------+</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>+
+Observe that it is compute02 in the above output, it my differ in your case.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Access the compute02 node and identify NIC connected to the <code>datacentre</code> physnet.</p>
+<div class="listingblock">
+<div class="content">
+<pre>[student@workstation ~]$ ssh root@compute02.srv.example.com
+Warning: Permanently added 'utility' (ED25519) to the list of known hosts.
+Warning: Permanently added 'compute02.srv.example.com' (ED25519) to the list of known hosts.
+Activate the web console with: systemctl enable --now cockpit.socket
+
+Register this system with Red Hat Insights: insights-client --register
+Create an account or view all your systems at https://red.ht/insights-dashboard
+Last login: Mon Apr  7 12:31:28 2025 from 192.168.51.254
+
+[root@compute02 ~]# ovs-vsctl list Open .
+...
+external_ids        : {..., ovn-bridge-mappings="datacentre:br-ex", ...}
+...
+
+[root@compute02 ~]# ovs-vsctl show
+426daad2-29a0-47a0-b829-638852d1dfd6
+    Manager "ptcp:6640:127.0.0.1"
+        is_connected: true
+    Bridge br-ex
+        fail_mode: standalone
+        Port patch-provnet-84157851-395c-40eb-a3ec-6b512dd58759-to-br-int
+            Interface patch-provnet-84157851-395c-40eb-a3ec-6b512dd58759-to-br-int
+                type: patch
+                options: {peer=patch-br-int-to-provnet-84157851-395c-40eb-a3ec-6b512dd58759}
+        Port patch-provnet-5d15d463-2d5f-44b9-8a15-756dff67456c-to-br-int
+            Interface patch-provnet-5d15d463-2d5f-44b9-8a15-756dff67456c-to-br-int
+                type: patch
+                options: {peer=patch-br-int-to-provnet-5d15d463-2d5f-44b9-8a15-756dff67456c}
+        Port eth2
+            Interface eth2
+        Port br-ex
+            Interface br-ex
+                type: internal</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above output shows that the route goes through eth2.</p>
+</div>
+</li>
+<li>
+<p>Run tcpdump on the eth2 interface to check traffic incoming to that node and in different window run SSH connection from the <code>workstation</code> machine to the TCP port 1022, as shown in the instruction after scenario was started.</p>
+<div class="listingblock">
+<div class="content">
+<pre></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</blockquote>
+</div>
+</li>
+</ol>
+</div>
+</div>
 </div>
 <nav class="pagination">
   <span class="prev"><a href="index.html">Guided solution</a></span>
