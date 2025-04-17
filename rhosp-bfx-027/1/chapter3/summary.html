@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Break-fix activity :: RHOSP Networking Break-Fix Practice - FIXME scenario details</title>
-    <link rel="prev" href="index.html">
-    <link rel="next" href="section2.html">
+    <title>Summary :: RHOSP Networking Break-Fix Practice - FIXME scenario details</title>
+    <link rel="prev" href="../chapter2/section2.html">
+    <link rel="next" href="../appendix/appendix.html">
     <meta name="generator" content="Antora 3.1.3">
     <link rel="stylesheet" href="../../../_/css/site.css">
     <script>var uiRootPath = '../../../_'</script>
@@ -55,13 +55,13 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="index.html">What’s in this break-fix?</a>
+    <a class="nav-link" href="../chapter1/index.html">What’s in this break-fix?</a>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="2">
-    <a class="nav-link" href="section1.html">Break-fix activity</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../chapter1/section1.html">Break-fix activity</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="section2.html">Check your work</a>
+    <a class="nav-link" href="../chapter1/section2.html">Check your work</a>
   </li>
 </ul>
   </li>
@@ -85,8 +85,8 @@
   </li>
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="../chapter3/summary.html">Summary</a>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="summary.html">Summary</a>
   </li>
 </ul>
   </li>
@@ -126,8 +126,7 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="../index.html">RHOSP Networking Break-Fix Practice - FIXME scenario details</a></li>
-    <li><a href="index.html">What’s in this break-fix?</a></li>
-    <li><a href="section1.html">Break-fix activity</a></li>
+    <li><a href="summary.html">Summary</a></li>
   </ul>
 </nav>
 </div>
@@ -136,35 +135,55 @@
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Break-fix activity</h1>
+<h1 class="page">Summary</h1>
 <div class="paragraph">
-<p>This section presents a scenario based on a real customer issue.</p>
+<p><strong>Checked OVN databases</strong>:</p>
 </div>
-<div class="olist arabic">
-<ol class="arabic">
+<div class="ulist">
+<ul>
 <li>
-<p>Read the scenario and success criteria.</p>
+<p>Interact with the OVN databases running in PODs on OpenShift</p>
 </li>
 <li>
-<p>Follow any instructions provided for setting up your lab environment.</p>
+<p>Identified gateway chassis hosting Loadbalancer for the Floating IP Port Forwarding.</p>
 </li>
 <li>
-<p>Resolve the issue as simulated in your lab environment.</p>
+<p>Identified bridge mappings in the <code>ovn-controller-ovs</code> POD running as gateway chassis on OpenShift</p>
 </li>
-<li>
-<p>After resolving the issue, run the grading script and submit the completion code as prompted.</p>
-</li>
-</ol>
+</ul>
 </div>
 <div class="paragraph">
-<p><strong>You must successfully complete this section to receive a passing grade for this module.</strong></p>
+<p><strong>Find where the packet gets lost</strong>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Executed tcpdump on the ovn-controller&#8217;s network interface associated with the br-datacentre bridge.</p>
+</li>
+<li>
+<p>Observed incoming SSH packets without VLAN ID (public network) and then tagged with VLAN 1000 (tenant network).</p>
+</li>
+<li>
+<p>Executed tcpdump on the compute node&#8217;s network interface associated with the br-ex bridge.</p>
+</li>
+<li>
+<p>Observed incoming SSH packets with VLAN ID 1000 comming to the compute node and replies going out directly without VLAN ID (public network).</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>If you exhaust your experience and resources, and you&#8217;re unable to solve the issue on your own, use the guided solution to step through one possible solution, with tips for addressing similar issues.</p>
+<p><strong>Identified Logical Router and Logical Router Port and its configuation in OVN</strong>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Checked OVN Logical Router Port&#8217;s options set in the OVN Nortbound database and identified if traffic is distributed or centralized.</p>
+</li>
+</ul>
 </div>
 <nav class="pagination">
-  <span class="prev"><a href="index.html">What’s in this break-fix?</a></span>
-  <span class="next"><a href="section2.html">Check your work</a></span>
+  <span class="prev"><a href="../chapter2/section2.html">Guided solution (page 2)</a></span>
+  <span class="next"><a href="../appendix/appendix.html">Appendix</a></span>
 </nav>
 </article>
   </div>
