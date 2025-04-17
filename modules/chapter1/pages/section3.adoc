@@ -1,0 +1,46 @@
+= Break-fix Scenario
+
+Objectives:
+
+* Investigate the instance connectivity issue in Red Hat OpenStack Services on OpenShift.
+
+* Solve the instance connectivity in the hands-on lab environment.
+
+Scenario:
+
+Your team manages a Red Hat OpenStack Services on OpenShift (RHOSO) infrastructure used by an important development team for your company. There was a requirement from your internal networking team to have Open Virtual Network (OVN), an open-source software-defined networking (SDN) solution that seamlessly integrates with OpenStack. Recently networking team noticed that there is Floating IP Port Forwarding connectivity issue with instance running in OpenStack environment.
+
+They noticed the following error:
+
+----
+[student@workstation ~]$ ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.165
+ssh: connect to host 192.168.51.165 port 1022: Connection timed out
+----
+
+
+== Recreate scenario
+
+* Recreate this scenario by running the lab` script on workstation VM as stack user:
+----
+[student@workstation ~]$ oc login -u admin -p redhatocp https://api.ocp4.example.com:6443
+Login successful.
+
+You have access to 76 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "openstack".
+
+[student@workstation ~]$ lab start bfx027
+Running start action against scenario bfx027
+Run the following command:
+ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.165
+----
+
+In the preceding output, ip address can differ in your lab environemnt.
+
+- This breaks the connectivity to instance.
+
+- To ensure scenario is recreated, run the ssh command from the previous output:
+----
+[student@workstation ~]$ ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.165
+ssh: connect to host 192.168.51.165 port 1022: Connection timed out
+----
