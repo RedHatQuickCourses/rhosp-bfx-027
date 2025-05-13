@@ -4,13 +4,18 @@
 
 **Type of issue:**
 
-FIXME: Describe an issue type/category that this specific issue falls into, like, "A Red Hat Enterprise Linux 7 system won't boot after a kernel update." Save issue-specific details for the break-fix scenario page.
-
+Your team manages a Red Hat OpenStack Platform (RHOSP) infrastructure used by an
+important development team for your company. There was a requirement from your
+internal networking team to have Open Virtual Network (OVN), an open-source
+software-defined networking (SDN) solution that seamlessly integrates with
+OpenStack. Recently networking team noticed that there is an issue with
+connectivity to the instance running in OpenStack envrionment but only when
+Floating IP Port Forwarding is used.
 
 
 **What you should already know:**
 
-FIXME: This training assumes that you are a Red Hat Certified System Administrator (RHCSA) or have equivalent experience administrating Red Hat Enterprise Linux 7 or 8. FIXME - update this as needed
+This training assumes that you are a Red Hat Certified System Administrator (RHCSA) or have equivalent experience administrating Red Hat Enterprise Linux 7 or 8.
 
 
 **How break-fix training works:**

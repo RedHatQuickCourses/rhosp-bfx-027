@@ -1,12 +1,28 @@
-= An Example Break-fix course
+= Red Hat OpenStack Platform: Break-fix Practice - Troubleshooting Floating IP Port Forwarding Connectivity Issue
 :navtitle: Home
 
 == Introduction
 
-TITLE1: Red Hat Enterprise Linux 9 (FIXME product)
-
-TITLE2: Break-fix Practice 1 (FIXME title)
-
 Description:
-This break-fix training simulates a problem FIXME . You'll investigate and solve the problem in a hands-on lab environment to complete the training.
+This break-fix training simulates a problem where connectivity to instance running on Red Hat OpenStack is compromised when Floating IP Port Forwarding is used. You will investigate and solve the problem in a hands-on lab environment to complete the training.
+
+
+== Course Objectives
+
+* Investigate the instance connectivity issue in Red Hat OpenStack Platform.
+* Solve the instance connectivity in the hands-on lab environment.
+
+
+== Audience
+
+* Support Engineers
+* Technical Account Managers
+* Solution Architects
+* Consultants
+
+== Prerequisites
+
+* RHCE or have equivalent knowledge.
+* Either you have completed the Red Hat OpenStack Administration I: Core Operations for Domain Operators course (CL110) or have equivalent knowledge.
+* Either you have completed the Red Hat OpenStack Administration II: Day 2 Operations for Cloud Operators course (CL210) or have equivalent knowledge.
 
