@@ -74,12 +74,19 @@
     <a class="nav-link" href="../chapter2/index.html">Guided solution</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../chapter2/section1.html">Guided solution (page 1 of 2)</a>
+    <a class="nav-link" href="../chapter2/section1.html">Guided solution (page 1)</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../chapter2/section2.html">Guided solution (page 2 of 2)</a>
+    <a class="nav-link" href="../chapter2/section2.html">Guided solution (page 2)</a>
   </li>
 </ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../chapter3/summary.html">Summary</a>
   </li>
 </ul>
   </li>
@@ -131,43 +138,18 @@
 <article class="doc">
 <h1 class="page">Check your work</h1>
 <div class="sect1">
-<h2 id="_follow_below_steps_in_the_lab_to_check_your_work"><a class="anchor" href="#_follow_below_steps_in_the_lab_to_check_your_work"></a>Follow below steps in the lab to check your work</h2>
+<h2 id="_check_your_work_using_the_grading_script"><a class="anchor" href="#_check_your_work_using_the_grading_script"></a>Check your work using the grading script:</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>FIXME: Add the instructions to be followed in the lab environment to make sure the problem has been resolved. You may chose to remove this block if grading script is provided in the lab to check the work.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_check_your_work_using_the_grading_script"><a class="anchor" href="#_check_your_work_using_the_grading_script"></a>Check your work using the grading script</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>After you have resolved the issue and met the success criteria, login to <code>FIXME</code> system as <code>FIXME</code> user and run the grading script as shown here to check your work:</p>
-</div>
-<div class="listingblock execute">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">break-fix-script grade</code></pre>
-</div>
-</div>
 <div class="listingblock">
-<div class="title">Sample output</div>
 <div class="content">
-<pre>[root@classroom ~]# break-fix-script grade
-Initiating break-fix-script with option grade
-Grading.  Please wait.
-Success.
-COMPLETION CODE: &lt;check your output for this value&gt;
-Completed break-fix-script with option grade successfully</pre>
+<pre>[student@workstation ~]$ lab grade bfx027
+Running grade action against scenario bfx027
+Grading scenario bfx027: PASSED!</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>FIXME: Remove the below block if no grading script is provided to check the work in the break-fix activity. In this case make sure you use the above block to provide step-by-step instructions learner can follow to check their work.</p>
+<p>Instance IP address from the preceding output can differ in your environment.</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_submit_the_completion_code"><a class="anchor" href="#_submit_the_completion_code"></a>Submit the completion code</h2>
-<div class="sectionbody">
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -175,23 +157,41 @@ Completed break-fix-script with option grade successfully</pre>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Skip this if not applicable for you.
+<div class="paragraph">
+<p>If the ssh connection to the guest requires a password, the default for Cirros
+images is "gocubsgo".</p>
+</div>
 </td>
 </tr>
 </table>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>For RedHat internal audience: Submit that completion code <a href="https://link-to-appropriate-lms.com" target="_blank" rel="noopener">here</a> to receive a grade for this training</p>
-</li>
-<li>
-<p>For RedHat partners: Submit that completion code <a href="https://link-to-appropriate-lms.com" target="_blank" rel="noopener">here</a> to receive a grade for this training</p>
-</li>
-</ul>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_success_criteria"><a class="anchor" href="#_success_criteria"></a>Success Criteria</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>FIXME: Change the links in the above lines to the link for appropriate audience specific LMS where learner can provide completion code. Remove this block if submitting completion is not applicable.</p>
+<p>Successful completion of this activity requires that ssh to the instance is working:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>[student@workstation ~]$ ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.165
+$</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>We recommend treating these scenarios as challenges first and attempting to resolve them independently. Even if you successfully resolve the issue on your own, it is valuable to go through the guided steps to understand the approach demonstrated in this training. Note that the MAC addresses, IP addresses, and other details referenced in the guided steps might vary in your specific scenario.</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
