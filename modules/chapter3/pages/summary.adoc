@@ -1,0 +1,24 @@
+= Summary
+
+*Checked OVN databases*:
+
+* Interact with the OVN databases running in PODs on OpenShift
+
+* Identified gateway chassis hosting Loadbalancer for the Floating IP Port Forwarding.
+
+* Identified bridge mappings in the `ovn-controller-ovs` POD running as gateway chassis on OpenShift
+
+*Find where the packet gets lost*:
+
+* Executed tcpdump on the ovn-controller's network interface associated with the br-datacentre bridge.
+
+* Observed incoming SSH packets without VLAN ID (public network) and then tagged with VLAN 1000 (tenant network).
+
+* Executed tcpdump on the compute node's network interface associated with the br-ex bridge.
+
+* Observed incoming SSH packets with VLAN ID 1000 comming to the compute node and replies going out directly without VLAN ID (public network).
+
+*Identified Logical Router and Logical Router Port and its configuation in OVN*:
+
+* Checked OVN Logical Router Port's options set in the OVN Nortbound database and identified if traffic is distributed or centralized.
+
