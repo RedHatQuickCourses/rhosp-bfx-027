@@ -1,5 +1,5 @@
 site:
-  title: RHOSP Networking Break-Fix Practice - FIXME scenario details
+  title: "Red Hat OpenStack Platform: Break-fix Practice - 1"
   start_page: rhosp-bfx-027::index.adoc
 
 content:

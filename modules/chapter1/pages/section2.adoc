@@ -15,7 +15,7 @@ images is "gocubsgo".
 == Success Criteria
 Successful completion of this activity requires that ssh to the instance is working:
 ----
-[student@workstation ~]$ ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.165
+[student@workstation ~]$ ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.97
 $
 ----
 

@@ -1,305 +1,493 @@
 = Guided solution (page 1)
 
-== Objectives
-* Investigate the instance connectivity issue in Red Hat OpenStack Services on OpenShift.
-* Solve the instance connectivity in the hands-on lab environment.
-
-== Outcomes
-* Investigate why ssh to instance through the forwarded port is not working.
-* Fix the ssh to instance failing issue.
-
-== Instructions
-
-1. Break the environment if you have not done it and then step through the fix.
+. Log in to your lab environment on the **ROLE** platform.
+. Break the environment if you have not done it and then step through the fix.
 +
+As the **student** user, run the lab start script on the **workstation** VM to reproduce the issue.
++
+[source, bash]
 ----
-[student@workstation ~]$ lab start bfx027
+cd /home/student/osp_training/scenarios_repo/
+./lab start bfx027
+----
++
+.Sample output
+----
+[student@workstation scenarios_repo]$ ./lab start bfx027
 Running start action against scenario bfx027
-Run the following command:
-ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.165
-----
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+Run the following command: 
+ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.97
 
-2. Run the ssh command from the previous lab command output and notice the Connection timed out error.
+----
++
+NOTE: The IP address in the displayed output may differ in your case.
+
+. Run the ssh command from the previous lab command output and notice the Connection timed out error.
 +
 ----
-[student@workstation ~]$ ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.165
-ssh: connect to host 192.168.51.165 port 1022: Connection timed out
+[student@workstation scenarios_repo]$ ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.97
+kex_exchange_identification: read: Connection reset by peer
+Connection reset by 192.168.51.97 port 1022
 ----
 +
 You observe that ssh attempt failed which indicates lack of connectivity using configured port forwarding.
-There is only port forwarding for the TCP port 1022 to port 22 configured, thus the ping command will not work and that is an expected behaviour.
+There is only port forwarding for the TCP port 1022 to port 22 configured, thus the ping command will not work and that is an expected behavior.
 
-3. Check connectivity to the other VM with Floating IP configured
+. Check connectivity to the other VM with Floating IP configured (scenario-bfx027-fip-vm)
++
+[source, bash]
+----
+oc exec -n openstack openstackclient -- openstack server list
+ssh -i /tmp/scenario-bfx027-key.pem cirros@IP cat /etc/cirros/version
+----
++
+**Replace the string IP in the above command with the appropriate IP address**
 +
 ----
 [student@workstation ~]$ oc exec -n openstack openstackclient -- openstack server list
-+--------------------------------------+------------------------+--------+---------------------------------------------------------+---------------------+----------+
-| ID                                   | Name                   | Status | Networks                                                | Image               | Flavor   |
-+--------------------------------------+------------------------+--------+---------------------------------------------------------+---------------------+----------+
-| a8a05113-822a-4b60-9198-8f89f1e05cdc | scenario-bfx027-pf-vm  | ACTIVE | scenario-bfx027-network=192.168.200.139                 | cirros-0.5.2-x86_64 | m1.small |
-| e4f8e03e-8d13-4410-bf7f-52e481179e1e | scenario-bfx027-fip-vm | ACTIVE | scenario-bfx027-network=192.168.200.224, 192.168.51.180 | cirros-0.5.2-x86_64 | m1.small |
-+--------------------------------------+------------------------+--------+---------------------------------------------------------+---------------------+----------+
-
-[student@workstation ~]$ ssh -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.180
-Warning: Permanently added '192.168.51.180' (ECDSA) to the list of known hosts.
-$ cat /etc/cirros/version
++--------------------------------------+------------------------+--------+--------------------------------------------------------+---------------------+----------+
+| ID                                   | Name                   | Status | Networks                                               | Image               | Flavor   |
++--------------------------------------+------------------------+--------+--------------------------------------------------------+---------------------+----------+
+| e2965dc6-991d-4ac7-ba62-bcfd66d15791 | scenario-bfx027-pf-vm  | ACTIVE | scenario-bfx027-network=192.168.200.17                 | cirros-0.5.2-x86_64 | m1.small |
+| fc1f441a-abbd-45d0-960b-f902aad120f0 | scenario-bfx027-fip-vm | ACTIVE | scenario-bfx027-network=192.168.200.152, 192.168.51.94 | cirros-0.5.2-x86_64 | m1.small |
++--------------------------------------+------------------------+--------+--------------------------------------------------------+---------------------+----------+
+[student@workstation ~]$ 
+[student@workstation ~]$ ssh -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.94 cat /etc/cirros/version
 0.5.2
+[student@workstation ~]$ 
 ----
 +
 Connectivity to other VM using Floating IP works fine which indicates that the issue is not with the connectivity in general but rather that there is some issue with Floating IP Port Forwarding.
 
-4. Floating IP Port Forwardings created in the Neutron are translated to the Loadbalancer in OVN. First lets check if such loadbalancer was created in OVN.
+. Floating IP Port Forwardings created in the Neutron are translated to the Loadbalancer in OVN. 
+. Check if such loadbalancer was created in OVN.
 +
+[source, bash]
+----
+oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only list load_balancer
+----
++
+.Sample output
 ----
 [student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only list load_balancer
-_uuid               : 3f931dab-2f58-41f3-bcf5-48b17b091ccb
-external_ids        : {"neutron:device_owner"=port_forwarding_plugin, "neutron:fip_id"="be9f3c09-7edb-41d7-8172-311cda772f29", "neutron:revision_number"="2", "neutron:router_name"=neutron-1f8305ff-682d-4bd7-9c92-59a2197bb83a}
+_uuid               : f6cbd962-5d77-4c3e-8b9d-602941b77df9
+external_ids        : {"neutron:device_owner"=port_forwarding_plugin, "neutron:fip_id"="75f90187-896a-4e4f-b524-611f182b80fb", "neutron:revision_number"="2", "neutron:router_name"=neutron-7368243c-3caf-48a1-a799-1112300a3536}
 health_check        : []
 ip_port_mappings    : {}
-name                : pf-floatingip-be9f3c09-7edb-41d7-8172-311cda772f29-tcp
+name                : pf-floatingip-75f90187-896a-4e4f-b524-611f182b80fb-tcp
 options             : {}
 protocol            : tcp
 selection_fields    : []
-vips                : {"192.168.51.165:1022"="192.168.200.139:22"}
+vips                : {"192.168.51.97:1022"="192.168.200.17:22"}
+[student@workstation ~]$ 
 ----
 +
-Loadbalancer seems to be created properly in OVN.
-Important thing to know is that loadbalancers in OVN are always centralized, which means that traffic using Floating IP Port Forwarding is always going through the gateway chassis where the router is hosted.
+* The load balancer appears to be created properly in OVN.
+* An important detail to note is that load balancers in OVN are always centralized.
+* This means that traffic using Floating IP Port Forwarding always passes through the gateway chassis where the router is hosted.
 
-5. Determine which gateway-chassis is your router on.
+. Determine which gateway-chassis is your router on.
+
+. Capture the uuid of the router.
 +
+[source, bash]
+----
+oc exec -n openstack openstackclient -- openstack router show scenario-bfx027-router -c id
+----
+
+. Run ovn-nbctl command on the neutron router <FIXME>
++
+[source, bash]
+----
+oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only show neutron-<router-id>
+----
++
+**Replace the string <router-id> with the uuid captured in the output of the previous command**
++
+.Sample output
 ----
 [student@workstation ~]$ oc exec -n openstack openstackclient -- openstack router show scenario-bfx027-router -c id
 +-------+--------------------------------------+
 | Field | Value                                |
 +-------+--------------------------------------+
-| id    | 1f8305ff-682d-4bd7-9c92-59a2197bb83a |
+| id    | 7368243c-3caf-48a1-a799-1112300a3536 |
 +-------+--------------------------------------+
+[student@workstation ~]$ 
 
-[student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only show neutron-b9968cde-1f94-43a4-a537-23bef2682920
-router 3584d841-f037-4f8d-a0bd-34ff9fd7cbe6 (neutron-1f8305ff-682d-4bd7-9c92-59a2197bb83a) (aka scenario-bfx027-router)
-    port lrp-1c9df04d-55fd-4eaa-a0e6-7445a363324d
-        mac: "fa:16:3e:43:78:21"
-        networks: ["192.168.51.179/24"]
-        gateway chassis: [5a3b4e75-f64a-4261-bfb9-290d09f259e4 bfbef098-d0f7-4f26-a5e0-aa89c079ca15 1048012a-c14c-4354-93e3-837701980ce3]
-    port lrp-fb802392-c9ec-4b3e-925b-1ce7176d8dde
-        mac: "fa:16:3e:fc:03:62"
+[student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only show neutron-7368243c-3caf-48a1-a799-1112300a3536
+router 9cfef2b9-24c2-4c93-a71f-fe5a497a9ffd (neutron-7368243c-3caf-48a1-a799-1112300a3536) (aka scenario-bfx027-router)
+    port lrp-bc9fdc58-adfb-41c5-9ec8-ae2a999d8618
+        mac: "fa:16:3e:45:aa:85"
         networks: ["192.168.200.1/24"]
-    nat be9f0cc7-c806-408f-9eac-9a3ae3382900
-        external ip: "192.168.51.179"
+    port lrp-3b9f7bb8-a84e-4920-a489-98f91428ca1f
+        mac: "fa:16:3e:33:1e:8c"
+        networks: ["192.168.51.95/24"]
+        gateway chassis: [c99cd59d-07ce-413b-86cd-f7da34c9a97f 9ed35ceb-b496-421b-aea8-ed86f4b10e61 f0d7366b-2bb5-49c0-98bd-90f84d79d2bf]
+    nat 6072c9f6-f101-4d8c-9918-581f79d09cb7
+        external ip: "192.168.51.94"
+        logical ip: "192.168.200.152"
+        type: "dnat_and_snat"
+    nat 9d13f9c4-f0b5-4b63-bea6-3e8cf3728807
+        external ip: "192.168.51.95"
         logical ip: "192.168.200.0/24"
         type: "snat"
-    nat c04bdb2b-c53c-4567-b647-7ab3f974b2ea
-        external ip: "192.168.51.180"
-        logical ip: "192.168.200.224"
-        type: "dnat_and_snat"
+[student@workstation ~]$ 
+----
 
-[student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only lrp-get-gateway-chassis lrp-d49dbb2a-eba9-49c2-9723-5c9d4adcdad7
-lrp-1c9df04d-55fd-4eaa-a0e6-7445a363324d_bfbef098-d0f7-4f26-a5e0-aa89c079ca15     3
-lrp-1c9df04d-55fd-4eaa-a0e6-7445a363324d_1048012a-c14c-4354-93e3-837701980ce3     2
-lrp-1c9df04d-55fd-4eaa-a0e6-7445a363324d_5a3b4e75-f64a-4261-bfb9-290d09f259e4     1
+. Run ovn-nbctl on the lpr-uuid belonging to gateway chassis from the above output <FIXME>
++
+[source, bash]
+----
+oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only lrp-get-gateway-chassis lrp-uuid
+----
++
+**Replace lpr-uuid with the appropriate string from the previous output**
++
+.Sample output
+----
+---snip from previous output---
+    port lrp-3b9f7bb8-a84e-4920-a489-98f91428ca1f
+        mac: "fa:16:3e:33:1e:8c"
+        networks: ["192.168.51.95/24"]
+        gateway chassis: [c99cd59d-07ce-413b-86cd-f7da34c9a97f 9ed35ceb-b496-421b-aea8-ed86f4b10e61 f0d7366b-2bb5-49c0-98bd-90f84d79d2bf]
+---snip from previous output---
 
-[student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-sb -o name | head -n 1) -- ovn-sbctl --no-leader-only list chassis bfbef098-d0f7-4f26-a5e0-aa89c079ca15
-_uuid               : 5ac0d497-f5a3-463f-8029-7f815f017f65
-encaps              : [7bc632b2-a61d-4f4d-8cce-067b56e48255]
+[student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only lrp-get-gateway-chassis lrp-3b9f7bb8-a84e-4920-a489-98f91428ca1f
+lrp-3b9f7bb8-a84e-4920-a489-98f91428ca1f_c99cd59d-07ce-413b-86cd-f7da34c9a97f     3
+lrp-3b9f7bb8-a84e-4920-a489-98f91428ca1f_9ed35ceb-b496-421b-aea8-ed86f4b10e61     2
+lrp-3b9f7bb8-a84e-4920-a489-98f91428ca1f_f0d7366b-2bb5-49c0-98bd-90f84d79d2bf     1
+[student@workstation ~]$ 
+----
++
+- Chassis represents ovn-controller running in the cluster.
+- We observe three chassis in the cluster, which aligns with the three control plane nodes in our deployment.
++
+- The last column in the above output is priority number. 
+- Pick the uuid belonging to highest priority from this output.
+- Pick the uuid string after underscore ("_").
+
+. Run ovs-sbctl command on the gateway chassis with the highest priority. <FIXME>
++
+[source, bash]
+----
+oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-sb -o name | head -n 1) -- ovn-sbctl --no-leader-only list chassis <gateway chassis uuid>
+----
++
+**Replace the string <gateway chassis uuid> with appropriate uuid derived in the previous output.**
++
+.Sample output
+----
+[student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-sb -o name | head -n 1) -- ovn-sbctl --no-leader-only list chassis c99cd59d-07ce-413b-86cd-f7da34c9a97f
+_uuid               : 3b3b7b1d-ef50-4e55-9092-f151657bc715
+encaps              : [832e46b2-237a-4c0c-90ce-df2abe363045]
 external_ids        : {}
 hostname            : master03
-name                : "bfbef098-d0f7-4f26-a5e0-aa89c079ca15"
+name                : "c99cd59d-07ce-413b-86cd-f7da34c9a97f"
 nb_cfg              : 0
 other_config        : {ct-commit-nat-v2="true", ct-commit-to-zone="true", ct-no-masked-label="true", datapath-type=system, fdb-timestamp="true", iface-types="bareudp,erspan,geneve,gre,gtpu,internal,ip6erspan,ip6gre,lisp,patch,srv6,stt,system,tap,vxlan", is-interconn="false", ls-dpg-column="true", mac-binding-timestamp="true", ovn-bridge-mappings="datacentre:br-datacentre", ovn-chassis-mac-mappings="", ovn-cms-options=enable-chassis-as-gw, ovn-ct-lb-related="true", ovn-enable-lflow-cache="true", ovn-limit-lflow-cache="", ovn-memlimit-lflow-cache-kb="", ovn-monitor-all="false", ovn-trim-limit-lflow-cache="", ovn-trim-timeout-ms="", ovn-trim-wmark-perc-lflow-cache="", port-up-notif="true"}
 transport_zones     : []
 vtep_logical_switches: []
+[student@workstation ~]$ 
 ----
 +
-Your router is hosted on 3 gateway chassis and the one which is active now is on the OpenShift node `master03`.
+Your router is hosted on 3 gateway chassis and the one which is active now is on the OpenShift node **master03**.
 
-6. Determine which OVS POD runs on that OpenShift worker node.
+. Determine which OVS POD runs on that OpenShift worker node.
 +
+[source, bash]
 ----
-[student@workstation ~]$ oc get pods -n openstack -l service=ovn-controller-ovs -o custom-columns=NAME:.metadata.name,NODE:spec.nodeName
+oc get pods -n openstack -l service=ovn-controller-ovs -o custom-columns=NAME:.metadata.name,NODE:spec.nodeName
+----
++
+.Sample output
+----
+[student@workstation ~]$  oc get pods -n openstack -l service=ovn-controller-ovs -o custom-columns=NAME:.metadata.name,NODE:spec.nodeName
 NAME                       NODE
-ovn-controller-ovs-96x87   master02
-ovn-controller-ovs-hp8bm   master03
-ovn-controller-ovs-htgrl   master01
+ovn-controller-ovs-f56mp   master03
+ovn-controller-ovs-k9d87   master02
+ovn-controller-ovs-vk8lg   master01
+[student@workstation ~]$ 
 ----
 +
-In our case it is the POD `ovn-controller-ovs-hp8bm`.
+In our case it is the POD **ovn-controller-ovs-f56mp**.
 
-7. Check what is the network type and physnet used by this network
+. Check what is the network type and physnet used by this network
 +
+[source, bash]
+----
+oc exec -n openstack openstackclient -- openstack network show scenario-bfx027-network
+----
++
+.Sample output
 ----
 [student@workstation ~]$ oc exec -n openstack openstackclient -- openstack network show scenario-bfx027-network
 +---------------------------+--------------------------------------+
 | Field                     | Value                                |
 +---------------------------+--------------------------------------+
-...
+. . . 
 | name                      | scenario-bfx027-network              |
-...
+. . . 
 | provider:network_type     | vlan                                 |
 | provider:physical_network | datacentre                           |
 | provider:segmentation_id  | 1000                                 |
-...
+. . . 
 +---------------------------+--------------------------------------+
+[student@workstation ~]$ 
 ----
 +
-In this case network used by the instances is provider `vlan` network and it uses `datacentre` physical network.
-Gateway chassis are hosted by the ovn-controller running in the POD on the OpenShift worker nodes, this physical network has to be configured in the `nicMapping` parameter in the `OpenStackControlPlane` Custom Resource in OpenShift.
+* In this case network used by the instances is provider **vlan** network and it uses **datacentre** physical network.
+* Gateway chassis are hosted by the ovn-controller running in the pod on the OpenShift worker nodes
+* This physical network has to be configured in the **nicMapping** parameter in the **OpenStackControlPlane** Custom Resource in OpenShift.
+
+. Check NIC mappings configured in the OpenStackControlPlane Custom Resource.
 +
-8. Check NIC mappings configured in the OpenStackControlPlane Custom Resource.
+[source, bash]
+----
+oc -n openstack get openstackcontrolplane openstack-control-plane -o custom-columns=NAME:.metadata.name,"NIC MAPPINGS":.spec.ovn.template.ovnController.nicMappings
+----
 +
+.Sample output
 ----
 [student@workstation ~]$ oc -n openstack get openstackcontrolplane openstack-control-plane -o custom-columns=NAME:.metadata.name,"NIC MAPPINGS":.spec.ovn.template.ovnController.nicMappings
 NAME                      NIC MAPPINGS
 openstack-control-plane   map[datacentre:ens4]
+[student@workstation ~]$ 
 ----
-In this case physical network `datacentre` is mapped to the `ens4` NIC which is on the OpenShift worker nodes. This `ens4` NIC is moved directly to the `ovn-controller-ovs` POD and it has name the same as physical network it is mapped to. In our case interface found in the `ovn-controller-ovs` POD should have name `datacentre` and the bridge created for that physical network is named `br-datacentre`.
+* In this case physical network **datacentre** is mapped to the **ens4** NIC which is on the OpenShift worker nodes. 
+* This **ens4** NIC is moved directly to the **ovn-controller-ovs** pod and it has the same name as physical network it is mapped to. 
+* In our case interface found in the **ovn-controller-ovs** pod should have name **datacentre** and the bridge created for that physical network is named **br-datacentre**.
+
+. Check traffic on the gateway chassis node hosting Neutron router.
+
+. Connect to the OVS pod's shell using rsh.
 +
-9. Check traffic on the gateway chassis node hosting Neutron router.
-+
-Run tcpdump in the OVS POD to check traffic incomming to that POD through the `datacentre` NIC and in different window run SSH connection from the `workstation` machine to the TCP port 1022, as shown in the instruction after scenario was started.
-+
+[source, bash]
 ----
-[student@workstation ~]$ oc rsh -n openstack -c ovs-vswitchd ovn-controller-ovs-hp8bm
+oc rsh -n openstack -c ovs-vswitchd ovn-controller-ovs-pod
+----
++
+**Replace ovn-controller-ovs-pod with the appropriate pod name captured earlier**
++
+.Sample output
+----
+[student@workstation ~]$ oc rsh -n openstack -c ovs-vswitchd ovn-controller-ovs-f56mp
+sh-5.1#
+----
+
+. Run tcpdump in the OVS pod to check traffic incoming to that pod through the **datacentre** NIC and in different window run SSH connection from the **workstation** machine to the TCP port 1022, as shown in the instruction after scenario was started.
++
+.Run on ovs pod's shell
+[source, bash]
+----
+tcpdump -ennvvi datacentre
+----
++
+.Run on workstation
+[source, bash]
+----
+ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@IP
+----
++
+**Replace the string IP with actual ip address**
++
+.Sample output
+----
 sh-5.1# tcpdump -ennvvi datacentre
 dropped privs to tcpdump
 tcpdump: listening on datacentre, link-type EN10MB (Ethernet), snapshot length 262144 bytes
-10:30:36.348303 52:54:00:02:33:fe > fa:16:3e:43:78:21, ethertype IPv4 (0x0800), length 74: (tos 0x48, ttl 63, id 27712, offset 0, flags [DF], proto TCP (6), length 60)
-    172.25.250.9.36684 > 192.168.51.165.1022: Flags [S], cksum 0x7a85 (correct), seq 2873327163, win 32120, options [mss 1460,sackOK,TS val 3460573827 ecr 0,nop,wscale 7], length 0
-10:30:36.349555 fa:16:3e:fc:03:62 > fa:16:3e:d1:be:35, ethertype 802.1Q (0x8100), length 78: vlan 1000, p 0, ethertype IPv4 (0x0800), (tos 0x48, ttl 62, id 27712, offset 0, flags [DF], proto TCP (6), length 60)
-    172.25.250.9.36684 > 192.168.200.139.22: Flags [S], cksum 0xe986 (correct), seq 2873327163, win 32120, options [mss 1460,sackOK,TS val 3460573827 ecr 0,nop,wscale 7], length 0
-10:30:36.357722 1e:0a:ab:52:a1:d7 > fa:16:3e:43:78:21, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
-    192.168.200.139.22 > 172.25.250.9.36684: Flags [S.], cksum 0x83d7 (correct), seq 2074550143, ack 2873327164, win 65160, options [mss 1460,sackOK,TS val 3230007 ecr 3460573827,nop,wscale 6], length 0
-10:30:36.358831 fa:16:3e:43:78:21 > 52:54:00:02:33:fe, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 60)
-    192.168.51.165.1022 > 172.25.250.9.36684: Flags [S.], cksum 0x14d6 (correct), seq 2074550143, ack 2873327164, win 65160, options [mss 1460,sackOK,TS val 3230007 ecr 3460573827,nop,wscale 6], length 0
-10:30:36.359681 52:54:00:02:33:fe > fa:16:3e:43:78:21, ethertype IPv4 (0x0800), length 66: (tos 0x48, ttl 63, id 27713, offset 0, flags [DF], proto TCP (6), length 52)
-    172.25.250.9.36684 > 192.168.51.165.1022: Flags [.], cksum 0x9a97 (incorrect -> 0x4123), seq 1, ack 1, win 251, options [nop,nop,TS val 3460573839 ecr 3230007], length 0
-10:30:36.360322 52:54:00:02:33:fe > fa:16:3e:43:78:21, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 27714, offset 0, flags [DF], proto TCP (6), length 73)
-    172.25.250.9.36684 > 192.168.51.165.1022: Flags [P.], cksum 0x9aac (incorrect -> 0x795c), seq 1:22, ack 1, win 251, options [nop,nop,TS val 3460573840 ecr 3230007], length 21
-10:30:36.572681 52:54:00:02:33:fe > fa:16:3e:43:78:21, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 27715, offset 0, flags [DF], proto TCP (6), length 73)
-    172.25.250.9.36684 > 192.168.51.165.1022: Flags [P.], cksum 0x9aac (incorrect -> 0x7888), seq 1:22, ack 1, win 251, options [nop,nop,TS val 3460574052 ecr 3230007], length 21
-10:30:36.788717 52:54:00:02:33:fe > fa:16:3e:43:78:21, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 27716, offset 0, flags [DF], proto TCP (6), length 73)
-    172.25.250.9.36684 > 192.168.51.165.1022: Flags [P.], cksum 0x9aac (incorrect -> 0x77b0), seq 1:22, ack 1, win 251, options [nop,nop,TS val 3460574268 ecr 3230007], length 21
-10:30:37.220719 52:54:00:02:33:fe > fa:16:3e:43:78:21, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 27717, offset 0, flags [DF], proto TCP (6), length 73)
-    172.25.250.9.36684 > 192.168.51.165.1022: Flags [P.], cksum 0x9aac (incorrect -> 0x7600), seq 1:22, ack 1, win 251, options [nop,nop,TS val 3460574700 ecr 3230007], length 21
-10:30:37.367140 1e:0a:ab:52:a1:d7 > fa:16:3e:43:78:21, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
-    192.168.200.139.22 > 172.25.250.9.36684: Flags [S.], cksum 0x2f86 (incorrect -> 0x7fe5), seq 2074550143, ack 2873327164, win 65160, options [mss 1460,sackOK,TS val 3231017 ecr 3460573827,nop,wscale 6], length 0
-10:30:37.367161 fa:16:3e:43:78:21 > 52:54:00:02:33:fe, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 60)
-    192.168.51.165.1022 > 172.25.250.9.36684: Flags [S.], cksum 0x9a9f (incorrect -> 0x10e4), seq 2074550143, ack 2873327164, win 65160, options [mss 1460,sackOK,TS val 3231017 ecr 3460573827,nop,wscale 6], length 0
-10:30:37.367627 52:54:00:02:33:fe > fa:16:3e:43:78:21, ethertype IPv4 (0x0800), length 66: (tos 0x48, ttl 63, id 27718, offset 0, flags [DF], proto TCP (6), length 52)
-    172.25.250.9.36684 > 192.168.51.165.1022: Flags [.], cksum 0x9a97 (incorrect -> 0x3d1e), seq 22, ack 1, win 251, options [nop,nop,TS val 3460574847 ecr 3230007], length 0
-10:30:38.092714 52:54:00:02:33:fe > fa:16:3e:43:78:21, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 27719, offset 0, flags [DF], proto TCP (6), length 73)
-    172.25.250.9.36684 > 192.168.51.165.1022: Flags [P.], cksum 0x9aac (incorrect -> 0x7298), seq 1:22, ack 1, win 251, options [nop,nop,TS val 3460575572 ecr 3230007], length 21
+15:18:00.813000 52:54:00:02:33:fe > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 74: (tos 0x48, ttl 63, id 31425, offset 0, flags [DF], proto TCP (6), length 60)
+    172.25.250.9.45246 > 192.168.51.97.1022: Flags [S], cksum 0xc51a (correct), seq 599590625, win 32120, options [mss 1460,sackOK,TS val 1017139013 ecr 0,nop,wscale 7], length 0
+15:18:00.814858 fa:16:3e:45:aa:85 > fa:16:3e:9f:5f:d9, ethertype 802.1Q (0x8100), length 78: vlan 1000, p 0, ethertype IPv4 (0x0800), (tos 0x48, ttl 62, id 31425, offset 0, flags [DF], proto TCP (6), length 60)
+    172.25.250.9.45246 > 192.168.200.17.22: Flags [S], cksum 0x3452 (correct), seq 599590625, win 32120, options [mss 1460,sackOK,TS val 1017139013 ecr 0,nop,wscale 7], length 0
+15:18:00.817613 0e:0a:38:8e:8e:08 > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.200.17.22 > 172.25.250.9.45246: Flags [S.], cksum 0x94e4 (correct), seq 2222593482, ack 599590626, win 65160, options [mss 1460,sackOK,TS val 155941565 ecr 1017139013,nop,wscale 6], length 0
+15:18:00.818053 fa:16:3e:33:1e:8c > 52:54:00:02:33:fe, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.51.97.1022 > 172.25.250.9.45246: Flags [S.], cksum 0x25ad (correct), seq 2222593482, ack 599590626, win 65160, options [mss 1460,sackOK,TS val 155941565 ecr 1017139013,nop,wscale 6], length 0
+15:18:00.818691 52:54:00:02:33:fe > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 66: (tos 0x48, ttl 63, id 31426, offset 0, flags [DF], proto TCP (6), length 52)
+    172.25.250.9.45246 > 192.168.51.97.1022: Flags [.], cksum 0x9a53 (incorrect -> 0x51ff), seq 1, ack 1, win 251, options [nop,nop,TS val 1017139020 ecr 155941565], length 0
+15:18:00.819273 52:54:00:02:33:fe > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 31427, offset 0, flags [DF], proto TCP (6), length 73)
+    172.25.250.9.45246 > 192.168.51.97.1022: Flags [P.], cksum 0x9a68 (incorrect -> 0x8a39), seq 1:22, ack 1, win 251, options [nop,nop,TS val 1017139020 ecr 155941565], length 21
+15:18:01.029777 52:54:00:02:33:fe > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 31428, offset 0, flags [DF], proto TCP (6), length 73)
+    172.25.250.9.45246 > 192.168.51.97.1022: Flags [P.], cksum 0x9a68 (incorrect -> 0x8966), seq 1:22, ack 1, win 251, options [nop,nop,TS val 1017139231 ecr 155941565], length 21
+15:18:01.237772 52:54:00:02:33:fe > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 31429, offset 0, flags [DF], proto TCP (6), length 73)
+    172.25.250.9.45246 > 192.168.51.97.1022: Flags [P.], cksum 0x9a68 (incorrect -> 0x8896), seq 1:22, ack 1, win 251, options [nop,nop,TS val 1017139439 ecr 155941565], length 21
+15:18:01.653817 52:54:00:02:33:fe > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 31430, offset 0, flags [DF], proto TCP (6), length 73)
+    172.25.250.9.45246 > 192.168.51.97.1022: Flags [P.], cksum 0x9a68 (incorrect -> 0x86f6), seq 1:22, ack 1, win 251, options [nop,nop,TS val 1017139855 ecr 155941565], length 21
+15:18:01.831847 0e:0a:38:8e:8e:08 > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.200.17.22 > 172.25.250.9.45246: Flags [S.], cksum 0x2f0c (incorrect -> 0x90ed), seq 2222593482, ack 599590626, win 65160, options [mss 1460,sackOK,TS val 155942580 ecr 1017139013,nop,wscale 6], length 0
+15:18:01.831877 fa:16:3e:33:1e:8c > 52:54:00:02:33:fe, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.51.97.1022 > 172.25.250.9.45246: Flags [S.], cksum 0x9a5b (incorrect -> 0x21b6), seq 2222593482, ack 599590626, win 65160, options [mss 1460,sackOK,TS val 155942580 ecr 1017139013,nop,wscale 6], length 0
+15:18:01.832319 52:54:00:02:33:fe > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 66: (tos 0x48, ttl 63, id 31431, offset 0, flags [DF], proto TCP (6), length 52)
+    172.25.250.9.45246 > 192.168.51.97.1022: Flags [.], cksum 0x9a53 (incorrect -> 0x4df5), seq 22, ack 1, win 251, options [nop,nop,TS val 1017140033 ecr 155941565], length 0
+15:18:02.509801 52:54:00:02:33:fe > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 31432, offset 0, flags [DF], proto TCP (6), length 73)
+    172.25.250.9.45246 > 192.168.51.97.1022: Flags [P.], cksum 0x9a68 (incorrect -> 0x839e), seq 1:22, ack 1, win 251, options [nop,nop,TS val 1017140711 ecr 155941565], length 21
+15:18:03.847580 0e:0a:38:8e:8e:08 > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.200.17.22 > 172.25.250.9.45246: Flags [S.], cksum 0x2f0c (incorrect -> 0x890d), seq 2222593482, ack 599590626, win 65160, options [mss 1460,sackOK,TS val 155944596 ecr 1017139013,nop,wscale 6], length 0
+15:18:03.847603 fa:16:3e:33:1e:8c > 52:54:00:02:33:fe, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.51.97.1022 > 172.25.250.9.45246: Flags [S.], cksum 0x9a5b (incorrect -> 0x19d6), seq 2222593482, ack 599590626, win 65160, options [mss 1460,sackOK,TS val 155944596 ecr 1017139013,nop,wscale 6], length 0
+15:18:03.847978 52:54:00:02:33:fe > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 66: (tos 0x48, ttl 63, id 31433, offset 0, flags [DF], proto TCP (6), length 52)
+    172.25.250.9.45246 > 192.168.51.97.1022: Flags [.], cksum 0x9a53 (incorrect -> 0x4615), seq 22, ack 1, win 251, options [nop,nop,TS val 1017142049 ecr 155941565], length 0
+15:18:04.173811 52:54:00:02:33:fe > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 31434, offset 0, flags [DF], proto TCP (6), length 73)
+    172.25.250.9.45246 > 192.168.51.97.1022: Flags [P.], cksum 0x9a68 (incorrect -> 0x7d1e), seq 1:22, ack 1, win 251, options [nop,nop,TS val 1017142375 ecr 155941565], length 21
 ^C
-13 packets captured
-13 packets received by filter
+17 packets captured
+17 packets received by filter
 0 packets dropped by kernel
+sh-5.1# 
 ----
 +
-You can observe that there are incomming packets going to the TCP port 1022. Those packets are not tagged with any vlan id - those are packets going from the workstation server using `public` network.
-There are also packets sent to the TCP port 22 to the fixed IP of the VM (`192.168.200.139`). Those packets are tagged with vlan ID 1000 which match the ID configured in the `provider:segmentation_id` of the the `scenario-bfx027-network` network. Those are packets send from the Neutron router to the VM and should be observed on the compute node where VM is running.
+* You can observe that there are incomming packets going to the TCP port 1022. 
+* Those packets are not tagged with any vlan id.
+* Those are packets going from the workstation server using `public` network.
+* There are also packets sent to the TCP port 22 to the fixed IP of the VM.
+* See IP `192.168.200.17` in the above output, it will vary in your output.
+* Those packets are tagged with vlan ID 1000 which match the ID configured in the `provider:segmentation_id` of the the `scenario-bfx027-network` network. 
+* Those are packets send from the Neutron router to the VM and should be observed on the compute node where VM is running.
 
-10. Access the RHOSO environment and determine the specific compute node where the instance is currently running.
+. Access the RHOSO environment and determine the specific compute node where the instance is currently running.
++
+[source, bash]
+----
+oc exec -n openstack openstackclient -- openstack server list --long -c Name -c Status -c Host
+----
++
+.Sample output
 +
 ----
 [student@workstation ~]$ oc exec -n openstack openstackclient -- openstack server list --long -c Name -c Status -c Host
 +------------------------+--------+---------------------------+
 | Name                   | Status | Host                      |
 +------------------------+--------+---------------------------+
-| scenario-bfx027-pf-vm  | ACTIVE | compute02.srv.example.com |
+| scenario-bfx027-pf-vm  | ACTIVE | compute01.srv.example.com |
 | scenario-bfx027-fip-vm | ACTIVE | compute01.srv.example.com |
 +------------------------+--------+---------------------------+
+[student@workstation ~]$ 
 ----
 +
-Observe that it is compute02 in the above output, it my differ in your case.
+**Observe that it is compute01 in the above output, it my differ in your case.**
 
-11. Access the compute02 node and identify NIC connected to the `datacentre` physnet.
+. Access the compute01 node and identify NIC connected to the `datacentre` physical network.
 +
+.Run on your associated compute node
+[source, bash]
 ----
-[student@workstation ~]$ ssh root@compute02.srv.example.com
-Warning: Permanently added 'utility' (ED25519) to the list of known hosts.
-Warning: Permanently added 'compute02.srv.example.com' (ED25519) to the list of known hosts.
+ovs-vsctl list Open .
+ovs-vsctl show
+----
++
+.Sample output
+----
+[student@workstation ~]$ ssh root@compute01.srv.example.com
 Activate the web console with: systemctl enable --now cockpit.socket
 
 Register this system with Red Hat Insights: insights-client --register
 Create an account or view all your systems at https://red.ht/insights-dashboard
-Last login: Mon Apr  7 12:31:28 2025 from 192.168.51.254
+Last login: Tue Jun 24 12:57:00 2025 from 192.168.51.254
+[root@compute01 ~]# 
+[root@compute01 ~]# ovs-vsctl list Open .
+. . .
+external_ids        : {hostname=compute01.srv.example.com, ovn-bridge=br-int, ovn-bridge-mappings="datacentre:br-ex", ovn-chassis-mac-mappings="datacentre:0e:0a:38:8e:8e:08", ovn-encap-ip="172.19.0.110", ovn-encap-tos="0", ovn-encap-type=geneve, ovn-match-northd-version=False, ovn-monitor-all=True, ovn-ofctrl-wait-before-clear="8000", ovn-remote="ssl:ovsdbserver-sb.openstack.svc:6642", ovn-remote-probe-interval="60000", rundir="/var/run/openvswitch", system-id="6b475747-b459-4488-b670-91252b56d663"}
+. . . 
+[root@compute01 ~]# 
+[root@compute01 ~]# ovs-vsctl show
 
-[root@compute02 ~]# ovs-vsctl list Open .
-...
-external_ids        : {..., ovn-bridge-mappings="datacentre:br-ex", ovn-chassis-mac-mappings="datacentre:1e:0a:ab:52:a1:d7", ...}
-...
 
 [root@compute02 ~]# ovs-vsctl show
-426daad2-29a0-47a0-b829-638852d1dfd6
-    Manager "ptcp:6640:127.0.0.1"
-        is_connected: true
+. . . 
     Bridge br-ex
         fail_mode: standalone
-        Port patch-provnet-d8d5f080-4af9-4f09-8f10-72c320c99f78-to-br-int
-            Interface patch-provnet-d8d5f080-4af9-4f09-8f10-72c320c99f78-to-br-int
-                type: patch
-                options: {peer=patch-br-int-to-provnet-d8d5f080-4af9-4f09-8f10-72c320c99f78}
         Port br-ex
             Interface br-ex
                 type: internal
-        Port patch-provnet-9c93546f-0f08-407b-9d65-e38b3d616746-to-br-int
-            Interface patch-provnet-9c93546f-0f08-407b-9d65-e38b3d616746-to-br-int
+        Port patch-provnet-392f50ef-731c-4984-916d-9ce45906ace1-to-br-int
+            Interface patch-provnet-392f50ef-731c-4984-916d-9ce45906ace1-to-br-int
                 type: patch
-                options: {peer=patch-br-int-to-provnet-9c93546f-0f08-407b-9d65-e38b3d616746}
+                options: {peer=patch-br-int-to-provnet-392f50ef-731c-4984-916d-9ce45906ace1}
         Port eth2
             Interface eth2
+        Port patch-provnet-723f5105-de04-407e-b270-a5becc7ab908-to-br-int
+            Interface patch-provnet-723f5105-de04-407e-b270-a5becc7ab908-to-br-int
+                type: patch
+                options: {peer=patch-br-int-to-provnet-723f5105-de04-407e-b270-a5becc7ab908}
+. . . 
 ----
 +
-The above output shows that the route goes through eth2.
+- Note **ovn-bridge-mappings="datacentre:br-ex"** in the output of `ovs-vsctl list Open .` command
+- See **br-ex** is mapped to **eth2** as per `ovs-vsctl show`` command
 
-12. Run tcpdump on the eth2 interface to check traffic incoming to that node and in different window run SSH connection from the `workstation` machine to the TCP port 1022, as shown in the instruction after scenario was started.
+. Run **tcpdump** on the eth2 interface of the **compute** node to check traffic incoming to that node and in different window run **SSH** connection from the **workstation** machine to the TCP port 1022, as shown in the instruction after scenario was started.
 +
+[source, bash]
 ----
-[root@compute02 ~]# tcpdump -ennvvi eth2 host 192.168.200.139
+tcpdump -ennvvi eth2 host private_ip
+----
++
+**Replace private_ip with the actual ip address of scenario-bfx027-pf-vm**
++
+.Sample output
+----
+[root@compute01 ~]# tcpdump -ennvvi eth2 host 192.168.200.17
 dropped privs to tcpdump
 tcpdump: listening on eth2, link-type EN10MB (Ethernet), snapshot length 262144 bytes
-14:34:52.571214 fa:16:3e:fc:03:62 > fa:16:3e:d1:be:35, ethertype 802.1Q (0x8100), length 78: vlan 1000, p 0, ethertype IPv4 (0x0800), (tos 0x48, ttl 62, id 35962, offset 0, flags [DF], proto TCP (6), length 60)
-    172.25.250.9.51964 > 192.168.200.139.22: Flags [S], cksum 0x0f95 (correct), seq 896855695, win 32120, options [mss 1460,sackOK,TS val 3475230048 ecr 0,nop,wscale 7], length 0
-14:34:52.572584 1e:0a:ab:52:a1:d7 > fa:16:3e:43:78:21, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
-    192.168.200.139.22 > 172.25.250.9.51964: Flags [S.], cksum 0x86e3 (correct), seq 2780525712, ack 896855696, win 65160, options [mss 1460,sackOK,TS val 17886260 ecr 3475230048,nop,wscale 6], length 0
-14:34:53.584992 1e:0a:ab:52:a1:d7 > fa:16:3e:43:78:21, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
-    192.168.200.139.22 > 172.25.250.9.51964: Flags [S.], cksum 0x2f86 (incorrect -> 0x82ee), seq 2780525712, ack 896855696, win 65160, options [mss 1460,sackOK,TS val 17887273 ecr 3475230048,nop,wscale 6], length 0
-14:34:55.600994 1e:0a:ab:52:a1:d7 > fa:16:3e:43:78:21, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
-    192.168.200.139.22 > 172.25.250.9.51964: Flags [S.], cksum 0x2f86 (incorrect -> 0x7b0e), seq 2780525712, ack 896855696, win 65160, options [mss 1460,sackOK,TS val 17889289 ecr 3475230048,nop,wscale 6], length 0
+
+15:53:42.993986 fa:16:3e:45:aa:85 > fa:16:3e:9f:5f:d9, ethertype 802.1Q (0x8100), length 78: vlan 1000, p 0, ethertype IPv4 (0x0800), (tos 0x48, ttl 62, id 13724, offset 0, flags [DF], proto TCP (6), length 60)
+    172.25.250.9.55072 > 192.168.200.17.22: Flags [S], cksum 0xcfab (correct), seq 3316773675, win 32120, options [mss 1460,sackOK,TS val 1019281193 ecr 0,nop,wscale 7], length 0
+15:53:42.995610 0e:0a:38:8e:8e:08 > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.200.17.22 > 172.25.250.9.55072: Flags [S.], cksum 0xd07a (correct), seq 1803738749, ack 3316773676, win 65160, options [mss 1460,sackOK,TS val 158083748 ecr 1019281193,nop,wscale 6], length 0
+15:53:44.003289 0e:0a:38:8e:8e:08 > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.200.17.22 > 172.25.250.9.55072: Flags [S.], cksum 0x2f0c (incorrect -> 0xcc8a), seq 1803738749, ack 3316773676, win 65160, options [mss 1460,sackOK,TS val 158084756 ecr 1019281193,nop,wscale 6], length 0
+15:53:46.019341 0e:0a:38:8e:8e:08 > fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.200.17.22 > 172.25.250.9.55072: Flags [S.], cksum 0x2f0c (incorrect -> 0xc4aa), seq 1803738749, ack 3316773676, win 65160, options [mss 1460,sackOK,TS val 158086772 ecr 1019281193,nop,wscale 6], length 0
 ^C
 4 packets captured
 4 packets received by filter
 0 packets dropped by kernel
+[root@compute01 ~]# 
 ----
 +
-Packets are coming to the compute node with correct vlan ID 1000, which matches the segmentation id set for the tenant network in the Neutron but the response from the VM is going out without any vlan ID tag. This means they it is send out directly using the flat `public` network created in the Neutron.
+* Packets are coming to the compute node with correct vlan ID 1000.
+* This matches the segmentation id set for the tenant network in the Neutron.
+* But the response from the VM is going out without any vlan ID tag. 
+* This means that it is send out directly using the flat `public` network created in the Neutron.
 
-13. Check Logical Router Port of the `tenant` network connected to the router
+. Check Logical Router Port of the `tenant` network connected to the router
 +
+[source, bash]
+----
+oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name) -- ovn-nbctl --no-leader-only list logical_router_port
+----
+.Sample output
 ----
 [student@workstation scenarios_repo]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name) -- ovn-nbctl --no-leader-only list logical_router_port
-...
-_uuid               : 970d91eb-6ca8-40ce-aea0-9bb0ba75b787
+. . . 
+_uuid               : c32db9bb-06bd-40da-847c-7f705726d9fe
 enabled             : []
-external_ids        : {"neutron:is_ext_gw"=False, "neutron:network_name"=neutron-d6409377-d4a6-45ba-b551-1991ca178072, "neutron:revision_number"="2", "neutron:router_name"="1f8305ff-682d-4bd7-9c92-59a2197bb83a", "neutron:subnet_ids"="91a29fe7-ea8f-4ae5-aa93-c22beeb5d8e1"}
+external_ids        : {"neutron:is_ext_gw"=False, "neutron:network_name"=neutron-a0190ce7-52b3-416e-8f2f-7c7b0f14b78c, "neutron:revision_number"="2",
+ "neutron:router_name"="7368243c-3caf-48a1-a799-1112300a3536", "neutron:subnet_ids"="b0a73483-bad8-4023-941f-63d845cdfea4"}
 gateway_chassis     : []
 ha_chassis_group    : []
 ipv6_prefix         : []
 ipv6_ra_configs     : {}
-mac                 : "fa:16:3e:fc:03:62"
-name                : lrp-fb802392-c9ec-4b3e-925b-1ce7176d8dde
+mac                 : "fa:16:3e:45:aa:85"
+name                : lrp-bc9fdc58-adfb-41c5-9ec8-ae2a999d8618
 networks            : ["192.168.200.1/24"]
 options             : {reside-on-redirect-chassis="false"}
 peer                : []
 status              : {}
+. . . 
 ----
-+
+
 This Logical Router Port has set option `reside-on-redirect-chassis` to `false` which, according to the OVN documentation means one of the following:
 [quote]
 traffic goes tunneled to the controller with the gateway port
-+
+
 or
+
 [quote]
 with ovn-chassis-mac-mappings configured: means the traffic is fully distributed and it is not being tunneled, nor sent, through the controller with the gateway port.
-+
-In this case it is the latter because `ovn-chassis-mac-bindings` is set in the `external_ids` on the node - see point 11.
+
+
+In this case it is the latter because `ovn-chassis-mac-bindings` is set in the `external_ids` on the node. 
+Refer to the output of **ovs-vsctl list Open .** command captured abobe.

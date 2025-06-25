@@ -1,26 +1,27 @@
-= Red Hat OpenStack Platform: Break-fix Practice - Troubleshooting Floating IP Port Forwarding Connectivity Issue
+= Red Hat OpenStack Platform: Break-fix Practice - 1
 :navtitle: Home
 
-== Introduction
+== Troubleshooting Floating IP Port Forwarding Connectivity Issue
 
-Description:
+=== Introduction
+
 This break-fix training simulates a problem where connectivity to instance running on Red Hat OpenStack is compromised when Floating IP Port Forwarding is used. You will investigate and solve the problem in a hands-on lab environment to complete the training.
 
 
-== Course Objectives
+=== Course Objectives
 
 * Investigate the instance connectivity issue in Red Hat OpenStack Platform.
 * Solve the instance connectivity in the hands-on lab environment.
 
 
-== Audience
+=== Audience
 
 * Support Engineers
 * Technical Account Managers
 * Solution Architects
 * Consultants
 
-== Prerequisites
+=== Prerequisites
 
 * RHCE or have equivalent knowledge.
 * Either you have completed the Red Hat OpenStack Administration I: Core Operations for Domain Operators course (CL110) or have equivalent knowledge.

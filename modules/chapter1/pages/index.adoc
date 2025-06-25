@@ -4,19 +4,14 @@
 
 **Type of issue:**
 
-Your team manages a Red Hat OpenStack Platform (RHOSP) infrastructure used by an
-important development team for your company. There was a requirement from your
-internal networking team to have Open Virtual Network (OVN), an open-source
-software-defined networking (SDN) solution that seamlessly integrates with
-OpenStack. Recently networking team noticed that there is an issue with
-connectivity to the instance running in OpenStack envrionment but only when
-Floating IP Port Forwarding is used.
+Your team manages a Red Hat OpenStack Platform (RHOSP) infrastructure used by an important development team for your company. There was a requirement from your internal networking team to have Open Virtual Network (OVN), an open-source software-defined networking (SDN) solution that seamlessly integrates with OpenStack. Recently networking team noticed that there is connectivity issue with instance running in OpenStack envrionment.
 
-
-**What you should already know:**
-
-This training assumes that you are a Red Hat Certified System Administrator (RHCSA) or have equivalent experience administrating Red Hat Enterprise Linux 7 or 8.
-
+They noticed the following error when they try to connect to the instance:
+----
+[student@workstation scenarios_repo]$ ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.97
+kex_exchange_identification: read: Connection reset by peer
+Connection reset by 192.168.51.97 port 1022
+----
 
 **How break-fix training works:**
 

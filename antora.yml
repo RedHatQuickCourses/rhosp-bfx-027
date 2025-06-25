@@ -1,5 +1,5 @@
 name: rhosp-bfx-027
-title: RHOSP Networking Break-Fix Practice - FIXME scenario details
+title: "Red Hat OpenStack Platform: Break-fix Practice - 1"
 version: 1
 nav:
 - modules/ROOT/nav.adoc
