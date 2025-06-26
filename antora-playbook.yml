@@ -1,5 +1,5 @@
 site:
-  title: "Red Hat OpenStack Platform: Break-fix Practice - 1"
+  title: "Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18"
   start_page: rhosp-bfx-027::index.adoc
 
 content:

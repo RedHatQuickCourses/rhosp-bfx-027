@@ -1,4 +1,4 @@
-= Red Hat OpenStack Platform: Break-fix Practice - 1
+= Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18
 :navtitle: Home
 
 == Troubleshooting Floating IP Port Forwarding Connectivity Issue

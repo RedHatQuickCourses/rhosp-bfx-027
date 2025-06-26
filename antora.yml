@@ -1,5 +1,5 @@
 name: rhosp-bfx-027
-title: "Red Hat OpenStack Platform: Break-fix Practice - 1"
+title: "Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18"
 version: 1
 nav:
 - modules/ROOT/nav.adoc
