@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Guided solution (page 2) :: Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18</title>
+    <link rel="prev" href="section1.html">
+    <link rel="next" href="../chapter3/summary.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/rhosp-bfx-027/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="rhosp-bfx-027" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Home</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html">Lab Environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../chapter1/index.html">What’s in this break-fix?</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../chapter1/section1.html">Break-fix activity</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../chapter1/section2.html">Check your work</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Guided solution</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="section1.html">Guided solution (page 1)</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="section2.html">Guided solution (page 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../chapter3/summary.html">Summary</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../appendix/appendix.html">Appendix</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18</a></li>
+    <li><a href="index.html">Guided solution</a></li>
+    <li><a href="section2.html">Guided solution (page 2)</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Guided solution (page 2)</h1>
+<div class="sect1">
+<h2 id="_solution"><a class="anchor" href="#_solution"></a>Solution</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The issue is actually caused by the misconfiguration of the Neutron because in the ML2/OVN backend Floating IP Port Forwarding and distributed floating IPs can’t work together in the same <code>vlan</code> or <code>flat</code> tenant network.</p>
+</div>
+<div class="paragraph">
+<p>To fix that issue, <code>vlan</code> type project network has to be replaced with the <code>geneve</code> type. To do this you need to delete existing VMs and tenant network and create them again.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Delete old resources</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack server delete scenario-bfx027-fip-vm
+oc exec -n openstack openstackclient -- openstack server delete scenario-bfx027-pf-vm
+oc exec -n openstack openstackclient -- openstack router remove subnet scenario-bfx027-router scenario-bfx027-subnet
+oc exec -n openstack openstackclient -- openstack network delete scenario-bfx027-network</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create new network of type <code>geneve</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack network create scenario-bfx027-network --provider-network-type geneve</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack network create scenario-bfx027-network --provider-network-type geneve
++---------------------------+--------------------------------------+
+| Field                     | Value                                |
++---------------------------+--------------------------------------+
+| admin_state_up            | UP                                   |
+| availability_zone_hints   |                                      |
+| availability_zones        |                                      |
+| created_at                | 2025-06-25T12:39:17Z                 |
+| description               |                                      |
+| dns_domain                |                                      |
+| id                        | c0c5218c-13ba-42c1-89b8-22dd5e51def0 |
+| ipv4_address_scope        | None                                 |
+| ipv6_address_scope        | None                                 |
+| is_default                | False                                |
+| is_vlan_transparent       | None                                 |
+| l2_adjacency              | True                                 |
+| mtu                       | 1442                                 |
+| name                      | scenario-bfx027-network              |
+| port_security_enabled     | True                                 |
+| project_id                | d388b58059514443a8dced8c2ed691f6     |
+| provider:network_type     | geneve                               |
+| provider:physical_network | None                                 |
+| provider:segmentation_id  | 17466                                |
+| qos_policy_id             | None                                 |
+| revision_number           | 1                                    |
+| router:external           | Internal                             |
+| segments                  | None                                 |
+| shared                    | False                                |
+| status                    | ACTIVE                               |
+| subnets                   |                                      |
+| tags                      |                                      |
+| tenant_id                 | d388b58059514443a8dced8c2ed691f6     |
+| updated_at                | 2025-06-25T12:39:17Z                 |
++---------------------------+--------------------------------------+
+[student@workstation ~]$</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Also create subnet and attach it to the existing network.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack subnet create --network scenario-bfx027-network --subnet-range 192.168.200.0/24 scenario-bfx027-subnet</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack subnet create --network scenario-bfx027-network --subnet-range 192.168.200.0/24 scenario-bfx027-subnet
++----------------------+--------------------------------------+
+| Field                | Value                                |
++----------------------+--------------------------------------+
+| allocation_pools     | 192.168.200.2-192.168.200.254        |
+| cidr                 | 192.168.200.0/24                     |
+| created_at           | 2025-06-25T12:39:41Z                 |
+| description          |                                      |
+| dns_nameservers      |                                      |
+| dns_publish_fixed_ip | None                                 |
+| enable_dhcp          | True                                 |
+| gateway_ip           | 192.168.200.1                        |
+| host_routes          |                                      |
+| id                   | 70303b76-fd2d-417c-a6fa-2806cb3c53e3 |
+| ip_version           | 4                                    |
+| ipv6_address_mode    | None                                 |
+| ipv6_ra_mode         | None                                 |
+| name                 | scenario-bfx027-subnet               |
+| network_id           | c0c5218c-13ba-42c1-89b8-22dd5e51def0 |
+| project_id           | d388b58059514443a8dced8c2ed691f6     |
+| revision_number      | 0                                    |
+| segment_id           | None                                 |
+| service_types        |                                      |
+| subnetpool_id        | None                                 |
+| tags                 |                                      |
+| updated_at           | 2025-06-25T12:39:41Z                 |
++----------------------+--------------------------------------+
+[student@workstation ~]$</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Connect the subnet scenario-bfx027-subnet to the router scenario-bfx027-router.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack router add subnet scenario-bfx027-router scenario-bfx027-subnet</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create servers.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack server create --flavor m1.small --image cirros-0.5.2-x86_64 --nic net-id=scenario-bfx027-network --key-name scenario-bfx027-key --security-group scenario-bfx027-sg scenario-bfx027-fip-vm
+oc exec -n openstack openstackclient -- openstack server create --flavor m1.small --image cirros-0.5.2-x86_64 --nic net-id=scenario-bfx027-network --key-name scenario-bfx027-key --security-group scenario-bfx027-sg scenario-bfx027-pf-vm</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>List the servers and wait till <code>Status</code> is <code>ACTIVE</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack server list</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack server list
++--------------------------------------+------------------------+--------+-----------------------------------------+---------------------+----------+
+| ID                                   | Name                   | Status | Networks                                | Image               | Flavor   |
++--------------------------------------+------------------------+--------+-----------------------------------------+---------------------+----------+
+| 168438e0-91f5-44c2-8482-f1cf638bb7ed | scenario-bfx027-pf-vm  | ACTIVE | scenario-bfx027-network=192.168.200.179 | cirros-0.5.2-x86_64 | m1.small |
+| 20bebc31-7d73-4412-8739-7bc88c6be793 | scenario-bfx027-fip-vm | ACTIVE | scenario-bfx027-network=192.168.200.138 | cirros-0.5.2-x86_64 | m1.small |
++--------------------------------------+------------------------+--------+-----------------------------------------+---------------------+----------+
+[student@workstation ~]$</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Next, attach floating IP to the one of the VMs and Port Forwarding to the other.</p>
+</li>
+<li>
+<p>Grab the port id of scenario-bfx027-fip-vm in one variable.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">port_id=$(oc exec -n openstack openstackclient -- openstack port list --server scenario-bfx027-fip-vm -c ID -f value | head)
+echo $port_id</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ port_id=$(oc exec -n openstack openstackclient -- openstack port list --server scenario-bfx027-fip-vm -c ID -f value | head)
+[student@workstation ~]$ echo $port_id
+815b4aa6-1dfd-4de1-81cd-cb89af8aceaf</pre>
+</div>
+</div>
+</li>
+<li>
+<p>List the floating ips available on the cluster.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack floating ip list -c ID -c "Floating IP Address"</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack floating ip list -c ID -c "Floating IP Address"
++--------------------------------------+---------------------+
+| ID                                   | Floating IP Address |
++--------------------------------------+---------------------+
+| 2f27ce9b-4d63-4a2a-a57b-66376029931c | 192.168.51.99       |
+| 37393605-1642-470d-87c8-ba6a5adcb1a4 | 192.168.51.91       |
+| 75f90187-896a-4e4f-b524-611f182b80fb | 192.168.51.97       |
+| 93116eb3-8d39-404c-ab44-4fbfd01dad51 | 192.168.51.94       |
++--------------------------------------+---------------------+
+[student@workstation ~]$</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Attach one of the floating ips to the captured port id.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"> oc exec -n openstack openstackclient -- openstack floating ip set --port $port_id &lt;floating IP&gt;
+ oc exec -n openstack openstackclient -- openstack server list</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Replace the string &lt;floating IP&gt; with the appropriate string</strong></p>
+</div>
+<div class="paragraph">
+<p>Here you may pick the same ip address that was assigned to the scenario-bfx027-fip-vm where ssh connectivity was functional.</p>
+</div>
+<div class="paragraph">
+<p>Refer to the step number 4 on the previous page.</p>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack floating ip set --port $port_id 192.168.51.94
+[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack server list
++--------------------------------------+------------------------+--------+--------------------------------------------------------+---------------------+----------+
+| ID                                   | Name                   | Status | Networks                                               | Image               | Flavor   |
++--------------------------------------+------------------------+--------+--------------------------------------------------------+---------------------+----------+
+| db3955d1-a43d-4ecb-afde-72dcea597e12 | scenario-bfx027-pf-vm  | ACTIVE | scenario-bfx027-network=192.168.200.223                | cirros-0.5.2-x86_64 | m1.small |
+| 76c5c487-31cf-4328-8d8e-4a383f980174 | scenario-bfx027-fip-vm | ACTIVE | scenario-bfx027-network=192.168.200.245, 192.168.51.94 | cirros-0.5.2-x86_64 | m1.small |
++--------------------------------------+------------------------+--------+--------------------------------------------------------+---------------------+----------+
+[student@workstation ~]$</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Grab the port id of the other vm (scenario-bfx027-fip-vm)</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">pf_port_id=$(oc exec -n openstack openstackclient -- openstack port list --server scenario-bfx027-pf-vm -c ID -f value | head)
+echo $pf_port_id</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$  pf_port_id=$(oc exec -n openstack openstackclient -- openstack port list --server scenario-bfx027-pf-vm -c ID -f value | head)
+[student@workstation ~]$ echo $pf_port_id
+ffb3ada5-f20d-4ac2-8dfe-7bc72e26fcac
+[student@workstation ~]$</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Capture the fixed ip address assigned to the above port id (pf_port_id) of scenario-bfx027-pf-vm</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">pf_port_ip_address=$(oc exec -n openstack openstackclient -- openstack port show $pf_port_id -f json | jq -r '.fixed_ips[0].ip_address')
+echo $pf_port_ip_address</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ pf_port_ip_address=$(oc exec -n openstack openstackclient -- openstack port show $pf_port_id -f json | jq -r '.fixed_ips[0].ip_address')
+[student@workstation ~]$ echo $pf_port_ip_address
+192.168.200.223
+[student@workstation ~]$</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Configure port forwarding so that connections to port 1022 on the floating IP are forwarded to port 22 (SSH) on the fixed IP of the scenario-bfx027-pf-vm instance.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack floating ip port forwarding create --internal-ip-address $pf_port_ip_address --port $pf_port_id --internal-protocol-port 22 --external-protocol-port 1022 --protocol tcp &lt;floating ip&gt;&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Replace the string &lt;floating ip&gt;&gt; with the appropriate ip address</strong></p>
+</div>
+<div class="paragraph">
+<p>You can use the same IP address that had non-functional SSH connectivity during the initial steps on the previous page.</p>
+</div>
+<div class="paragraph">
+<p>To identify this IP address, run the following command on the workstation VM:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat osp_training/.scenariobfx027/message</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ cat osp_training/.scenariobfx027/message
+Run the following command:
+ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.97
+[student@workstation ~]$
+[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack floating ip port forwarding create --internal-ip-address $pf_port_ip_address --port $pf_port_id --internal-protocol-port 22 --external-protocol-port 1022 --protocol tcp 192.168.51.97
++---------------------+--------------------------------------+
+| Field               | Value                                |
++---------------------+--------------------------------------+
+| description         |                                      |
+| external_port       | 1022                                 |
+| external_port_range | 1022:1022                            |
+| id                  | 4e5b9874-37dd-40e7-9e8b-0ca69773645e |
+| internal_ip_address | 192.168.200.223                      |
+| internal_port       | 22                                   |
+| internal_port_id    | ffb3ada5-f20d-4ac2-8dfe-7bc72e26fcac |
+| internal_port_range | 22:22                                |
+| name                | None                                 |
+| protocol            | tcp                                  |
++---------------------+--------------------------------------+</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Check connectivity to the VM using the forwarded TCP port.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@IP cat /etc/cirros/version</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Replace the string IP in the above command with the appropriate IP address</strong></p>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.97 cat /etc/cirros/version
+0.5.2
+[student@workstation ~]$</pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="section1.html">Guided solution (page 1)</a></span>
+  <span class="next"><a href="../chapter3/summary.html">Summary</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

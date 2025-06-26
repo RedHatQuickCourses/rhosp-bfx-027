@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Guided solution (page 1) :: Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18</title>
+    <link rel="prev" href="index.html">
+    <link rel="next" href="section2.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/rhosp-bfx-027/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="rhosp-bfx-027" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Home</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html">Lab Environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../chapter1/index.html">What’s in this break-fix?</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../chapter1/section1.html">Break-fix activity</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../chapter1/section2.html">Check your work</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Guided solution</a>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="section1.html">Guided solution (page 1)</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="section2.html">Guided solution (page 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../chapter3/summary.html">Summary</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../appendix/appendix.html">Appendix</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Troubleshooting instance connectivity issue in Red Hat OpenStack Platform 18</a></li>
+    <li><a href="index.html">Guided solution</a></li>
+    <li><a href="section1.html">Guided solution (page 1)</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Guided solution (page 1)</h1>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Log in to your lab environment on the <strong>ROLE</strong> platform.</p>
+</li>
+<li>
+<p>Break the environment if you have not done it and then step through the fix.</p>
+<div class="paragraph">
+<p>As the <strong>student</strong> user, run the lab start script on the <strong>workstation</strong> VM to reproduce the issue.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd /home/student/osp_training/scenarios_repo/
+./lab start bfx027</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation scenarios_repo]$ ./lab start bfx027
+Running start action against scenario bfx027
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+Run the following command:
+ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.97</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The IP address in the displayed output may differ in your case.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Run the ssh command from the previous lab command output and notice the Connection timed out error.</p>
+<div class="listingblock">
+<div class="content">
+<pre>[student@workstation scenarios_repo]$ ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.97
+kex_exchange_identification: read: Connection reset by peer
+Connection reset by 192.168.51.97 port 1022</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You observe that ssh attempt failed which indicates lack of connectivity using configured port forwarding.
+There is only port forwarding for the TCP port 1022 to port 22 configured, thus the ping command will not work and that is an expected behavior.</p>
+</div>
+</li>
+<li>
+<p>Check connectivity to the other VM with Floating IP configured (scenario-bfx027-fip-vm)</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack server list
+ssh -i /tmp/scenario-bfx027-key.pem cirros@IP cat /etc/cirros/version</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Replace the string IP in the above command with the appropriate IP address</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack server list
++--------------------------------------+------------------------+--------+--------------------------------------------------------+---------------------+----------+
+| ID                                   | Name                   | Status | Networks                                               | Image               | Flavor   |
++--------------------------------------+------------------------+--------+--------------------------------------------------------+---------------------+----------+
+| e2965dc6-991d-4ac7-ba62-bcfd66d15791 | scenario-bfx027-pf-vm  | ACTIVE | scenario-bfx027-network=192.168.200.17                 | cirros-0.5.2-x86_64 | m1.small |
+| fc1f441a-abbd-45d0-960b-f902aad120f0 | scenario-bfx027-fip-vm | ACTIVE | scenario-bfx027-network=192.168.200.152, 192.168.51.94 | cirros-0.5.2-x86_64 | m1.small |
++--------------------------------------+------------------------+--------+--------------------------------------------------------+---------------------+----------+
+[student@workstation ~]$
+[student@workstation ~]$ ssh -i /tmp/scenario-bfx027-key.pem cirros@192.168.51.94 cat /etc/cirros/version
+0.5.2
+[student@workstation ~]$</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Connectivity to other VM using Floating IP works fine which indicates that the issue is not with the connectivity in general but rather that there is some issue with Floating IP Port Forwarding.</p>
+</div>
+</li>
+<li>
+<p>Floating IP Port Forwardings created in the Neutron are translated to the Loadbalancer in OVN.</p>
+</li>
+<li>
+<p>Check if such loadbalancer was created in OVN.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only list load_balancer</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only list load_balancer
+_uuid               : f6cbd962-5d77-4c3e-8b9d-602941b77df9
+external_ids        : {"neutron:device_owner"=port_forwarding_plugin, "neutron:fip_id"="75f90187-896a-4e4f-b524-611f182b80fb", "neutron:revision_number"="2", "neutron:router_name"=neutron-7368243c-3caf-48a1-a799-1112300a3536}
+health_check        : []
+ip_port_mappings    : {}
+name                : pf-floatingip-75f90187-896a-4e4f-b524-611f182b80fb-tcp
+options             : {}
+protocol            : tcp
+selection_fields    : []
+vips                : {"192.168.51.97:1022"="192.168.200.17:22"}
+[student@workstation ~]$</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The load balancer appears to be created properly in OVN.</p>
+</li>
+<li>
+<p>An important detail to note is that load balancers in OVN are always centralized.</p>
+</li>
+<li>
+<p>This means that traffic using Floating IP Port Forwarding always passes through the gateway chassis where the router is hosted.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Determine which gateway-chassis is your router on.</p>
+</li>
+<li>
+<p>Capture the uuid of the router.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack router show scenario-bfx027-router -c id</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Get Logical Router Ports connected to the Logical Router which represents our Neutron router</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only show neutron-&lt;router-id&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Replace the string &lt;router-id&gt; with the uuid captured in the output of the previous command</strong></p>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack router show scenario-bfx027-router -c id
++-------+--------------------------------------+
+| Field | Value                                |
++-------+--------------------------------------+
+| id    | 7368243c-3caf-48a1-a799-1112300a3536 |
++-------+--------------------------------------+
+[student@workstation ~]$
+
+[student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only show neutron-7368243c-3caf-48a1-a799-1112300a3536
+router 9cfef2b9-24c2-4c93-a71f-fe5a497a9ffd (neutron-7368243c-3caf-48a1-a799-1112300a3536) (aka scenario-bfx027-router)
+    port lrp-bc9fdc58-adfb-41c5-9ec8-ae2a999d8618
+        mac: "fa:16:3e:45:aa:85"
+        networks: ["192.168.200.1/24"]
+    port lrp-3b9f7bb8-a84e-4920-a489-98f91428ca1f
+        mac: "fa:16:3e:33:1e:8c"
+        networks: ["192.168.51.95/24"]
+        gateway chassis: [c99cd59d-07ce-413b-86cd-f7da34c9a97f 9ed35ceb-b496-421b-aea8-ed86f4b10e61 f0d7366b-2bb5-49c0-98bd-90f84d79d2bf]
+    nat 6072c9f6-f101-4d8c-9918-581f79d09cb7
+        external ip: "192.168.51.94"
+        logical ip: "192.168.200.152"
+        type: "dnat_and_snat"
+    nat 9d13f9c4-f0b5-4b63-bea6-3e8cf3728807
+        external ip: "192.168.51.95"
+        logical ip: "192.168.200.0/24"
+        type: "snat"
+[student@workstation ~]$</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Check gateway chassis where the Logical Router Port representing Neutron&#8217;s external gateway port is</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only lrp-get-gateway-chassis lrp-uuid</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Replace lpr-uuid with the appropriate string from the previous output</strong></p>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>---snip from previous output---
+    port lrp-3b9f7bb8-a84e-4920-a489-98f91428ca1f
+        mac: "fa:16:3e:33:1e:8c"
+        networks: ["192.168.51.95/24"]
+        gateway chassis: [c99cd59d-07ce-413b-86cd-f7da34c9a97f 9ed35ceb-b496-421b-aea8-ed86f4b10e61 f0d7366b-2bb5-49c0-98bd-90f84d79d2bf]
+---snip from previous output---
+
+[student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only lrp-get-gateway-chassis lrp-3b9f7bb8-a84e-4920-a489-98f91428ca1f
+lrp-3b9f7bb8-a84e-4920-a489-98f91428ca1f_c99cd59d-07ce-413b-86cd-f7da34c9a97f     3
+lrp-3b9f7bb8-a84e-4920-a489-98f91428ca1f_9ed35ceb-b496-421b-aea8-ed86f4b10e61     2
+lrp-3b9f7bb8-a84e-4920-a489-98f91428ca1f_f0d7366b-2bb5-49c0-98bd-90f84d79d2bf     1
+[student@workstation ~]$</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Chassis represents ovn-controller running in the cluster.</p>
+</li>
+<li>
+<p>We observe three chassis in the cluster, which aligns with the three control plane nodes in our deployment.</p>
+</li>
+<li>
+<p>The last column in the above output is priority number.</p>
+</li>
+<li>
+<p>Pick the uuid belonging to highest priority from this output.</p>
+</li>
+<li>
+<p>Format of each entry is like "lrp-&lt;lrp_uuid&gt;_&lt;chassis_uuid&gt;" so pick the uuid string after underscore ("_").</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Check on which host (OpenShift worker) this chassis hosting our Logical Router Port actually is</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-sb -o name | head -n 1) -- ovn-sbctl --no-leader-only list chassis &lt;gateway chassis uuid&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Replace the string &lt;gateway chassis uuid&gt; with appropriate uuid derived in the previous output.</strong></p>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-sb -o name | head -n 1) -- ovn-sbctl --no-leader-only list chassis c99cd59d-07ce-413b-86cd-f7da34c9a97f
+_uuid               : 3b3b7b1d-ef50-4e55-9092-f151657bc715
+encaps              : [832e46b2-237a-4c0c-90ce-df2abe363045]
+external_ids        : {}
+hostname            : master03
+name                : "c99cd59d-07ce-413b-86cd-f7da34c9a97f"
+nb_cfg              : 0
+other_config        : {ct-commit-nat-v2="true", ct-commit-to-zone="true", ct-no-masked-label="true", datapath-type=system, fdb-timestamp="true", iface-types="bareudp,erspan,geneve,gre,gtpu,internal,ip6erspan,ip6gre,lisp,patch,srv6,stt,system,tap,vxlan", is-interconn="false", ls-dpg-column="true", mac-binding-timestamp="true", ovn-bridge-mappings="datacentre:br-datacentre", ovn-chassis-mac-mappings="", ovn-cms-options=enable-chassis-as-gw, ovn-ct-lb-related="true", ovn-enable-lflow-cache="true", ovn-limit-lflow-cache="", ovn-memlimit-lflow-cache-kb="", ovn-monitor-all="false", ovn-trim-limit-lflow-cache="", ovn-trim-timeout-ms="", ovn-trim-wmark-perc-lflow-cache="", port-up-notif="true"}
+transport_zones     : []
+vtep_logical_switches: []
+[student@workstation ~]$</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Your router is hosted on 3 gateway chassis and the one which is active now is on the OpenShift node <strong>master03</strong>.</p>
+</div>
+</li>
+<li>
+<p>Determine which OVS POD runs on that OpenShift worker node.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n openstack -l service=ovn-controller-ovs -o custom-columns=NAME:.metadata.name,NODE:spec.nodeName</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$  oc get pods -n openstack -l service=ovn-controller-ovs -o custom-columns=NAME:.metadata.name,NODE:spec.nodeName
+NAME                       NODE
+ovn-controller-ovs-f56mp   master03
+ovn-controller-ovs-k9d87   master02
+ovn-controller-ovs-vk8lg   master01
+[student@workstation ~]$</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In our case it is the POD <strong>ovn-controller-ovs-f56mp</strong>.</p>
+</div>
+</li>
+<li>
+<p>Check what is the network type and physnet used by this network</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack network show scenario-bfx027-network</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack network show scenario-bfx027-network
++---------------------------+--------------------------------------+
+| Field                     | Value                                |
++---------------------------+--------------------------------------+
+. . .
+| name                      | scenario-bfx027-network              |
+. . .
+| provider:network_type     | vlan                                 |
+| provider:physical_network | datacentre                           |
+| provider:segmentation_id  | 1000                                 |
+. . .
++---------------------------+--------------------------------------+
+[student@workstation ~]$</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In this case network used by the instances is provider <strong>vlan</strong> network and it uses <strong>datacentre</strong> physical network.</p>
+</li>
+<li>
+<p>Gateway chassis are hosted by the ovn-controller running in the pod on the OpenShift worker nodes</p>
+</li>
+<li>
+<p>This physical network has to be configured in the <strong>nicMapping</strong> parameter in the <strong>OpenStackControlPlane</strong> Custom Resource in OpenShift.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Check NIC mappings configured in the OpenStackControlPlane Custom Resource.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc -n openstack get openstackcontrolplane openstack-control-plane -o custom-columns=NAME:.metadata.name,"NIC MAPPINGS":.spec.ovn.template.ovnController.nicMappings</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ oc -n openstack get openstackcontrolplane openstack-control-plane -o custom-columns=NAME:.metadata.name,"NIC MAPPINGS":.spec.ovn.template.ovnController.nicMappings
+NAME                      NIC MAPPINGS
+openstack-control-plane   map[datacentre:ens4]
+[student@workstation ~]$</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In this case physical network <strong>datacentre</strong> is mapped to the <strong>ens4</strong> NIC which is on the OpenShift worker nodes.</p>
+</li>
+<li>
+<p>This <strong>ens4</strong> NIC is moved directly to the <strong>ovn-controller-ovs</strong> pod and it has the same name as physical network it is mapped to.</p>
+</li>
+<li>
+<p>In our case interface found in the <strong>ovn-controller-ovs</strong> pod should have name <strong>datacentre</strong> and the bridge created for that physical network is named <strong>br-datacentre</strong>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Check traffic on the gateway chassis node hosting Neutron router.</p>
+</li>
+<li>
+<p>Connect to the OVS pod&#8217;s shell using rsh.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc rsh -n openstack -c ovs-vswitchd ovn-controller-ovs-pod</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Replace ovn-controller-ovs-pod with the appropriate pod name captured earlier</strong></p>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ oc rsh -n openstack -c ovs-vswitchd ovn-controller-ovs-f56mp
+sh-5.1#</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Run tcpdump in the OVS pod to check traffic incoming to that pod through the <strong>datacentre</strong> NIC and in different window run SSH connection from the <strong>workstation</strong> machine to the TCP port 1022, as shown in the instruction after scenario was started.</p>
+<div class="listingblock">
+<div class="title">Run on ovs pod&#8217;s shell</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">tcpdump -ennvvi datacentre</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Run on workstation</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">ssh -p 1022 -i /tmp/scenario-bfx027-key.pem cirros@IP</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Replace the string IP with actual ip address</strong></p>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>sh-5.1# tcpdump -ennvvi datacentre
+dropped privs to tcpdump
+tcpdump: listening on datacentre, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+15:18:00.813000 52:54:00:02:33:fe &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 74: (tos 0x48, ttl 63, id 31425, offset 0, flags [DF], proto TCP (6), length 60)
+    172.25.250.9.45246 &gt; 192.168.51.97.1022: Flags [S], cksum 0xc51a (correct), seq 599590625, win 32120, options [mss 1460,sackOK,TS val 1017139013 ecr 0,nop,wscale 7], length 0
+15:18:00.814858 fa:16:3e:45:aa:85 &gt; fa:16:3e:9f:5f:d9, ethertype 802.1Q (0x8100), length 78: vlan 1000, p 0, ethertype IPv4 (0x0800), (tos 0x48, ttl 62, id 31425, offset 0, flags [DF], proto TCP (6), length 60)
+    172.25.250.9.45246 &gt; 192.168.200.17.22: Flags [S], cksum 0x3452 (correct), seq 599590625, win 32120, options [mss 1460,sackOK,TS val 1017139013 ecr 0,nop,wscale 7], length 0
+15:18:00.817613 0e:0a:38:8e:8e:08 &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.200.17.22 &gt; 172.25.250.9.45246: Flags [S.], cksum 0x94e4 (correct), seq 2222593482, ack 599590626, win 65160, options [mss 1460,sackOK,TS val 155941565 ecr 1017139013,nop,wscale 6], length 0
+15:18:00.818053 fa:16:3e:33:1e:8c &gt; 52:54:00:02:33:fe, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.51.97.1022 &gt; 172.25.250.9.45246: Flags [S.], cksum 0x25ad (correct), seq 2222593482, ack 599590626, win 65160, options [mss 1460,sackOK,TS val 155941565 ecr 1017139013,nop,wscale 6], length 0
+15:18:00.818691 52:54:00:02:33:fe &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 66: (tos 0x48, ttl 63, id 31426, offset 0, flags [DF], proto TCP (6), length 52)
+    172.25.250.9.45246 &gt; 192.168.51.97.1022: Flags [.], cksum 0x9a53 (incorrect -&gt; 0x51ff), seq 1, ack 1, win 251, options [nop,nop,TS val 1017139020 ecr 155941565], length 0
+15:18:00.819273 52:54:00:02:33:fe &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 31427, offset 0, flags [DF], proto TCP (6), length 73)
+    172.25.250.9.45246 &gt; 192.168.51.97.1022: Flags [P.], cksum 0x9a68 (incorrect -&gt; 0x8a39), seq 1:22, ack 1, win 251, options [nop,nop,TS val 1017139020 ecr 155941565], length 21
+15:18:01.029777 52:54:00:02:33:fe &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 31428, offset 0, flags [DF], proto TCP (6), length 73)
+    172.25.250.9.45246 &gt; 192.168.51.97.1022: Flags [P.], cksum 0x9a68 (incorrect -&gt; 0x8966), seq 1:22, ack 1, win 251, options [nop,nop,TS val 1017139231 ecr 155941565], length 21
+15:18:01.237772 52:54:00:02:33:fe &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 31429, offset 0, flags [DF], proto TCP (6), length 73)
+    172.25.250.9.45246 &gt; 192.168.51.97.1022: Flags [P.], cksum 0x9a68 (incorrect -&gt; 0x8896), seq 1:22, ack 1, win 251, options [nop,nop,TS val 1017139439 ecr 155941565], length 21
+15:18:01.653817 52:54:00:02:33:fe &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 31430, offset 0, flags [DF], proto TCP (6), length 73)
+    172.25.250.9.45246 &gt; 192.168.51.97.1022: Flags [P.], cksum 0x9a68 (incorrect -&gt; 0x86f6), seq 1:22, ack 1, win 251, options [nop,nop,TS val 1017139855 ecr 155941565], length 21
+15:18:01.831847 0e:0a:38:8e:8e:08 &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.200.17.22 &gt; 172.25.250.9.45246: Flags [S.], cksum 0x2f0c (incorrect -&gt; 0x90ed), seq 2222593482, ack 599590626, win 65160, options [mss 1460,sackOK,TS val 155942580 ecr 1017139013,nop,wscale 6], length 0
+15:18:01.831877 fa:16:3e:33:1e:8c &gt; 52:54:00:02:33:fe, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.51.97.1022 &gt; 172.25.250.9.45246: Flags [S.], cksum 0x9a5b (incorrect -&gt; 0x21b6), seq 2222593482, ack 599590626, win 65160, options [mss 1460,sackOK,TS val 155942580 ecr 1017139013,nop,wscale 6], length 0
+15:18:01.832319 52:54:00:02:33:fe &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 66: (tos 0x48, ttl 63, id 31431, offset 0, flags [DF], proto TCP (6), length 52)
+    172.25.250.9.45246 &gt; 192.168.51.97.1022: Flags [.], cksum 0x9a53 (incorrect -&gt; 0x4df5), seq 22, ack 1, win 251, options [nop,nop,TS val 1017140033 ecr 155941565], length 0
+15:18:02.509801 52:54:00:02:33:fe &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 31432, offset 0, flags [DF], proto TCP (6), length 73)
+    172.25.250.9.45246 &gt; 192.168.51.97.1022: Flags [P.], cksum 0x9a68 (incorrect -&gt; 0x839e), seq 1:22, ack 1, win 251, options [nop,nop,TS val 1017140711 ecr 155941565], length 21
+15:18:03.847580 0e:0a:38:8e:8e:08 &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.200.17.22 &gt; 172.25.250.9.45246: Flags [S.], cksum 0x2f0c (incorrect -&gt; 0x890d), seq 2222593482, ack 599590626, win 65160, options [mss 1460,sackOK,TS val 155944596 ecr 1017139013,nop,wscale 6], length 0
+15:18:03.847603 fa:16:3e:33:1e:8c &gt; 52:54:00:02:33:fe, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.51.97.1022 &gt; 172.25.250.9.45246: Flags [S.], cksum 0x9a5b (incorrect -&gt; 0x19d6), seq 2222593482, ack 599590626, win 65160, options [mss 1460,sackOK,TS val 155944596 ecr 1017139013,nop,wscale 6], length 0
+15:18:03.847978 52:54:00:02:33:fe &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 66: (tos 0x48, ttl 63, id 31433, offset 0, flags [DF], proto TCP (6), length 52)
+    172.25.250.9.45246 &gt; 192.168.51.97.1022: Flags [.], cksum 0x9a53 (incorrect -&gt; 0x4615), seq 22, ack 1, win 251, options [nop,nop,TS val 1017142049 ecr 155941565], length 0
+15:18:04.173811 52:54:00:02:33:fe &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 87: (tos 0x48, ttl 63, id 31434, offset 0, flags [DF], proto TCP (6), length 73)
+    172.25.250.9.45246 &gt; 192.168.51.97.1022: Flags [P.], cksum 0x9a68 (incorrect -&gt; 0x7d1e), seq 1:22, ack 1, win 251, options [nop,nop,TS val 1017142375 ecr 155941565], length 21
+^C
+17 packets captured
+17 packets received by filter
+0 packets dropped by kernel
+sh-5.1#</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You can observe that there are incomming packets going to the TCP port 1022.</p>
+</li>
+<li>
+<p>Those packets are not tagged with any vlan id.</p>
+</li>
+<li>
+<p>Those are packets going from the workstation server using <code>public</code> network.</p>
+</li>
+<li>
+<p>There are also packets sent to the TCP port 22 to the fixed IP of the VM.</p>
+</li>
+<li>
+<p>See IP <code>192.168.200.17</code> in the above output, it will vary in your output.</p>
+</li>
+<li>
+<p>Those packets are tagged with vlan ID 1000 which match the ID configured in the <code>provider:segmentation_id</code> of the the <code>scenario-bfx027-network</code> network.</p>
+</li>
+<li>
+<p>Those are packets send from the Neutron router to the VM and should be observed on the compute node where VM is running.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Access the RHOSO environment and determine the specific compute node where the instance is currently running.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack server list --long -c Name -c Status -c Host</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack server list --long -c Name -c Status -c Host
++------------------------+--------+---------------------------+
+| Name                   | Status | Host                      |
++------------------------+--------+---------------------------+
+| scenario-bfx027-pf-vm  | ACTIVE | compute01.srv.example.com |
+| scenario-bfx027-fip-vm | ACTIVE | compute01.srv.example.com |
++------------------------+--------+---------------------------+
+[student@workstation ~]$</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Observe that it is compute01 in the above output, it my differ in your case.</strong></p>
+</div>
+</li>
+<li>
+<p>Access the compute01 node and identify NIC connected to the <code>datacentre</code> physical network.</p>
+<div class="listingblock">
+<div class="title">Run on your associated compute node</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">ovs-vsctl list Open .
+ovs-vsctl show</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[student@workstation ~]$ ssh root@compute01.srv.example.com
+Activate the web console with: systemctl enable --now cockpit.socket
+
+Register this system with Red Hat Insights: insights-client --register
+Create an account or view all your systems at https://red.ht/insights-dashboard
+Last login: Tue Jun 24 12:57:00 2025 from 192.168.51.254
+[root@compute01 ~]#
+[root@compute01 ~]# ovs-vsctl list Open .
+. . .
+external_ids        : {hostname=compute01.srv.example.com, ovn-bridge=br-int, ovn-bridge-mappings="datacentre:br-ex", ovn-chassis-mac-mappings="datacentre:0e:0a:38:8e:8e:08", ovn-encap-ip="172.19.0.110", ovn-encap-tos="0", ovn-encap-type=geneve, ovn-match-northd-version=False, ovn-monitor-all=True, ovn-ofctrl-wait-before-clear="8000", ovn-remote="ssl:ovsdbserver-sb.openstack.svc:6642", ovn-remote-probe-interval="60000", rundir="/var/run/openvswitch", system-id="6b475747-b459-4488-b670-91252b56d663"}
+. . .
+[root@compute01 ~]#
+[root@compute01 ~]# ovs-vsctl show
+
+
+[root@compute02 ~]# ovs-vsctl show
+. . .
+    Bridge br-ex
+        fail_mode: standalone
+        Port br-ex
+            Interface br-ex
+                type: internal
+        Port patch-provnet-392f50ef-731c-4984-916d-9ce45906ace1-to-br-int
+            Interface patch-provnet-392f50ef-731c-4984-916d-9ce45906ace1-to-br-int
+                type: patch
+                options: {peer=patch-br-int-to-provnet-392f50ef-731c-4984-916d-9ce45906ace1}
+        Port eth2
+            Interface eth2
+        Port patch-provnet-723f5105-de04-407e-b270-a5becc7ab908-to-br-int
+            Interface patch-provnet-723f5105-de04-407e-b270-a5becc7ab908-to-br-int
+                type: patch
+                options: {peer=patch-br-int-to-provnet-723f5105-de04-407e-b270-a5becc7ab908}
+. . .</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Note <strong>ovn-bridge-mappings="datacentre:br-ex"</strong> in the output of <code>ovs-vsctl list Open .</code> command</p>
+</li>
+<li>
+<p>See <strong>br-ex</strong> is mapped to <strong>eth2</strong> as per <code>ovs-vsctl show`</code> command</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Run <strong>tcpdump</strong> on the eth2 interface of the <strong>compute</strong> node to check traffic incoming to that node and in different window run <strong>SSH</strong> connection from the <strong>workstation</strong> machine to the TCP port 1022, as shown in the instruction after scenario was started.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">tcpdump -ennvvi eth2 host private_ip</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Replace private_ip with the actual ip address of scenario-bfx027-pf-vm</strong></p>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
+<pre>[root@compute01 ~]# tcpdump -ennvvi eth2 host 192.168.200.17
+dropped privs to tcpdump
+tcpdump: listening on eth2, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+
+15:53:42.993986 fa:16:3e:45:aa:85 &gt; fa:16:3e:9f:5f:d9, ethertype 802.1Q (0x8100), length 78: vlan 1000, p 0, ethertype IPv4 (0x0800), (tos 0x48, ttl 62, id 13724, offset 0, flags [DF], proto TCP (6), length 60)
+    172.25.250.9.55072 &gt; 192.168.200.17.22: Flags [S], cksum 0xcfab (correct), seq 3316773675, win 32120, options [mss 1460,sackOK,TS val 1019281193 ecr 0,nop,wscale 7], length 0
+15:53:42.995610 0e:0a:38:8e:8e:08 &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.200.17.22 &gt; 172.25.250.9.55072: Flags [S.], cksum 0xd07a (correct), seq 1803738749, ack 3316773676, win 65160, options [mss 1460,sackOK,TS val 158083748 ecr 1019281193,nop,wscale 6], length 0
+15:53:44.003289 0e:0a:38:8e:8e:08 &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.200.17.22 &gt; 172.25.250.9.55072: Flags [S.], cksum 0x2f0c (incorrect -&gt; 0xcc8a), seq 1803738749, ack 3316773676, win 65160, options [mss 1460,sackOK,TS val 158084756 ecr 1019281193,nop,wscale 6], length 0
+15:53:46.019341 0e:0a:38:8e:8e:08 &gt; fa:16:3e:33:1e:8c, ethertype IPv4 (0x0800), length 74: (tos 0x10, ttl 63, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    192.168.200.17.22 &gt; 172.25.250.9.55072: Flags [S.], cksum 0x2f0c (incorrect -&gt; 0xc4aa), seq 1803738749, ack 3316773676, win 65160, options [mss 1460,sackOK,TS val 158086772 ecr 1019281193,nop,wscale 6], length 0
+^C
+4 packets captured
+4 packets received by filter
+0 packets dropped by kernel
+[root@compute01 ~]#</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Packets are coming to the compute node with correct vlan ID 1000.</p>
+</li>
+<li>
+<p>This matches the segmentation id set for the tenant network in the Neutron.</p>
+</li>
+<li>
+<p>But the response from the VM is going out without any vlan ID tag.</p>
+</li>
+<li>
+<p>This means that it is send out directly using the flat <code>public</code> network created in the Neutron.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Check Logical Router Port of the <code>tenant</code> network connected to the router</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name) -- ovn-nbctl --no-leader-only list logical_router_port</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>[student@workstation scenarios_repo]$ oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name) -- ovn-nbctl --no-leader-only list logical_router_port
+. . .
+_uuid               : c32db9bb-06bd-40da-847c-7f705726d9fe
+enabled             : []
+external_ids        : {"neutron:is_ext_gw"=False, "neutron:network_name"=neutron-a0190ce7-52b3-416e-8f2f-7c7b0f14b78c, "neutron:revision_number"="2",
+ "neutron:router_name"="7368243c-3caf-48a1-a799-1112300a3536", "neutron:subnet_ids"="b0a73483-bad8-4023-941f-63d845cdfea4"}
+gateway_chassis     : []
+ha_chassis_group    : []
+ipv6_prefix         : []
+ipv6_ra_configs     : {}
+mac                 : "fa:16:3e:45:aa:85"
+name                : lrp-bc9fdc58-adfb-41c5-9ec8-ae2a999d8618
+networks            : ["192.168.200.1/24"]
+options             : {reside-on-redirect-chassis="false"}
+peer                : []
+status              : {}
+. . .</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This Logical Router Port has set option <code>reside-on-redirect-chassis</code> to <code>false</code> which, according to the OVN documentation means one of the following:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+traffic goes tunneled to the controller with the gateway port
+</blockquote>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+with ovn-chassis-mac-mappings configured: means the traffic is fully distributed and it is not being tunneled, nor sent, through the controller with the gateway port.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>In this case it is the latter because <code>ovn-chassis-mac-bindings</code> is set in the <code>external_ids</code> on the node.
+Refer to the output of <strong>ovs-vsctl list Open .</strong> command captured abobe.</p>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="index.html">Guided solution</a></span>
+  <span class="next"><a href="section2.html">Guided solution (page 2)</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
