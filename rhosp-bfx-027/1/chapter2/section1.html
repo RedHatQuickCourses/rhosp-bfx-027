@@ -273,7 +273,7 @@ vips                : {"192.168.51.97:1022"="192.168.200.17:22"}
 </div>
 </li>
 <li>
-<p>Run ovn-nbctl command on the neutron router &lt;FIXME&gt;</p>
+<p>Get Logical Router Ports connected to the Logical Router which represents our Neutron router</p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only show neutron-&lt;router-id&gt;</code></pre>
@@ -315,7 +315,7 @@ router 9cfef2b9-24c2-4c93-a71f-fe5a497a9ffd (neutron-7368243c-3caf-48a1-a799-111
 </div>
 </li>
 <li>
-<p>Run ovn-nbctl on the lpr-uuid belonging to gateway chassis from the above output &lt;FIXME&gt;</p>
+<p>Check gateway chassis where the Logical Router Port representing Neutron&#8217;s external gateway port is</p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-nb -o name | head -n 1) -- ovn-nbctl --no-leader-only lrp-get-gateway-chassis lrp-uuid</code></pre>
@@ -356,13 +356,13 @@ lrp-3b9f7bb8-a84e-4920-a489-98f91428ca1f_f0d7366b-2bb5-49c0-98bd-90f84d79d2bf   
 <p>Pick the uuid belonging to highest priority from this output.</p>
 </li>
 <li>
-<p>Pick the uuid string after underscore ("_").</p>
+<p>Format of each entry is like "lrp-&lt;lrp_uuid&gt;_&lt;chassis_uuid&gt;" so pick the uuid string after underscore ("_").</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>Run ovs-sbctl command on the gateway chassis with the highest priority. &lt;FIXME&gt;</p>
+<p>Check on which host (OpenShift worker) this chassis hosting our Logical Router Port actually is</p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack $(oc get pods -n openstack -l service=ovsdbserver-sb -o name | head -n 1) -- ovn-sbctl --no-leader-only list chassis &lt;gateway chassis uuid&gt;</code></pre>
